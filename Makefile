@@ -13,7 +13,7 @@ OBJS=$(addsuffix .o, $(SRCS))
 MOBJS=$(addprefix obj/, $(OBJS))
 
 $(TARGET): $(OBJS) 
-	$(LD) $(LDFLAGS) $(MOBJS) -o $(TARGET)
+	$(LD) $(LDFLAGS) $(MOBJS) -o $(TARGET) $(GTKFLAGS)
 
 %.c.o: src/%.c
 	$(CC) -c $(CFLAGS) $< -o obj/$@ $(GTKFLAGS)

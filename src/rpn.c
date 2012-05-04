@@ -134,6 +134,10 @@ void rpn_division(struct rpn_node ** rpn_stack) {
 }
 
 void rpn_resolve(char * input[], double * result, int * error) {
+  if(*input == NULL || strlen(*input) == 0) {
+    *error = 1;
+    return;
+  }
   int rpn_size = 10;
   struct rpn_node *rpn_expression[rpn_size];
   rpn_parse(input, rpn_expression, &rpn_size);
