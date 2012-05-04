@@ -15,4 +15,6 @@ struct rpn_node {
   struct rpn_node *next;
 } rpn_node;
 
+void rpn_resolve(char * input[], double * result, int * error);
+
 #endif // RPN_FUNCTIONS

@@ -7,4 +7,5 @@ int main(int argc, char *argv[]) {
   double result;
   rpn_resolve(&argv[1], &result, &error);
   printf("%.6f\n", result);
+  return 0;
 }

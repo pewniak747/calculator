@@ -5,21 +5,24 @@
 #include "rpn.h"
 
 int rpn_opcode(char op) {
+  int result;
   switch(op) {
-    case '+': return 1;
-    case '-': return 2;
-    case '*': return 3;
-    case '/': return 4;
+    case '+': result = 1; break;
+    case '-': result = 2; break;
+    case '*': result = 3; break;
+    case '/': result = 4; break;
   }
+  return result;
 }
 
 int rpn_precedence(int op) {
   switch(op) {
-    case 1: return 1;
-    case 2: return 1;
-    case 3: return 2;
-    case 4: return 2;
+    case 1: op = 1; break;
+    case 2: op = 1; break;
+    case 3: op = 2; break;
+    case 4: op = 2; break;
   }
+  return op;
 }
 
 void rpn_push(struct rpn_node ** rpn_stack, struct rpn_node * new_node) {
@@ -130,7 +133,6 @@ void rpn_division(struct rpn_node ** rpn_stack) {
   rpn_push(rpn_stack, rpn_create(0, args[0]/args[1]));
 }
 
-//double rpn_resolve(struct rpn_node *rpn_expression[], int size) {
 void rpn_resolve(char * input[], double * result, int * error) {
   int rpn_size = 10;
   struct rpn_node *rpn_expression[rpn_size];
