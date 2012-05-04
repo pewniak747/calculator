@@ -2,20 +2,7 @@
 #include<stdio.h>
 #include<string.h>
 #include<stdbool.h>
-
-/* function types
- * 0 - value
- * 1 - addition
- * 2 - substraction
- * 3 - multiplication
- * 4 - division
- */
-
-struct rpn_node {
-  int type;
-  double value;
-  struct rpn_node *next;
-} rpn_node;
+#include "rpn.h"
 
 int rpn_opcode(char op) {
   switch(op) {
@@ -143,35 +130,36 @@ void rpn_division(struct rpn_node ** rpn_stack) {
   rpn_push(rpn_stack, rpn_create(0, args[0]/args[1]));
 }
 
-double rpn_resolve(struct rpn_node *rpn_expression[], int size) {
+//double rpn_resolve(struct rpn_node *rpn_expression[], int size) {
+void rpn_resolve(char * input[], double * result, int * error) {
+  int rpn_size = 10;
+  struct rpn_node *rpn_expression[rpn_size];
+  rpn_parse(input, rpn_expression, &rpn_size);
   struct rpn_node *rpn_stack = 0;
   int i=0;
-  for(i=0; i<size; i++) {
-    switch(rpn_expression[i]->type) {
-      case 0 :
-        rpn_push(&rpn_stack, rpn_expression[i]);
-        break;
-      case 1 :
-        rpn_addition(&rpn_stack);
-        break;
-      case 2 :
-        rpn_substraction(&rpn_stack);
-        break;
-      case 3 :
-        rpn_multiplication(&rpn_stack);
-        break;
-      case 4 :
-        rpn_division(&rpn_stack);
-        break;
+  for(i=0; i<rpn_size; i++) {
+    if(rpn_expression[i]->type == 0) {
+      rpn_push(&rpn_stack, rpn_expression[i]);
+    }
+    else {
+      switch(rpn_expression[i]->type) {
+        case 1 :
+          rpn_addition(&rpn_stack);
+          break;
+        case 2 :
+          rpn_substraction(&rpn_stack);
+          break;
+        case 3 :
+          rpn_multiplication(&rpn_stack);
+          break;
+        case 4 :
+          rpn_division(&rpn_stack);
+          break;
+      }
+      free(rpn_expression[i]);
     }
   }
-  return rpn_stack->value;
+  *result = rpn_stack->value;
+  while(rpn_stack != NULL) rpn_pop(&rpn_stack, true);
 }
 
-int main(int argc, char *argv[]) {
-  int rpn_size=10;
-  struct rpn_node *rpn_expression[rpn_size];
-  rpn_parse(&argv[1], rpn_expression, &rpn_size);
-  double result = rpn_resolve(rpn_expression, rpn_size);
-  printf("%.6f\n", result);
-}
