@@ -26,16 +26,26 @@ int rpn_opcode(char op) {
   }
 }
 
+int rpn_precedence(int op) {
+  switch(op) {
+    case 1: return 1;
+    case 2: return 1;
+    case 3: return 2;
+    case 4: return 2;
+  }
+}
+
 void rpn_push(struct rpn_node ** rpn_stack, struct rpn_node * new_node) {
   new_node->next = *rpn_stack;
   *rpn_stack = new_node;
 }
 
-void rpn_pop(struct rpn_node ** rpn_stack) {
+void rpn_pop(struct rpn_node ** rpn_stack, bool fr) {
   if(*rpn_stack != NULL) {
     struct rpn_node *stack_ptr = *rpn_stack;
     *rpn_stack = stack_ptr->next;
-    free(stack_ptr);
+    if(fr)
+      free(stack_ptr);
   }
 }
 
@@ -52,21 +62,24 @@ void rpn_parse(char *input[], struct rpn_node * result[], int * result_size) {
   double memory_value;
   bool memory = false;
   char token;
+  struct rpn_node * op_stack = 0;
   for(i=0; i<input_size; i++) {
     token = (*input)[i];
-    //printf("%d\n", (int)(token)-48);
     if(token == '+' || token == '-' || token == '*' || token == '/') {
-      //printf("operator!\n");
       if(memory) {
         result[*result_size] = rpn_create(0, memory_value);
         *result_size += 1;
         memory = false;
       }
-      if(op > 0) {
-        result[*result_size] = rpn_create(op, 0);
-        *result_size += 1;
-      }
       op = rpn_opcode(token);
+      if(!(op_stack == NULL || rpn_precedence(op_stack->type) < rpn_precedence(op))) {
+        while(op_stack != NULL && rpn_precedence(op_stack->type) > rpn_precedence(op)) {
+          result[*result_size] = op_stack;
+          *result_size += 1;
+          rpn_pop(&op_stack, false);
+        }
+      }
+      rpn_push(&op_stack, rpn_create(op, 0));
     }
     else {
       if(memory) {
@@ -77,9 +90,6 @@ void rpn_parse(char *input[], struct rpn_node * result[], int * result_size) {
         memory_value = (int)(token)-48;
         memory = true;
       }
-
-      if(*result_size == 0 || memory) {
-      }
     }
   }
   if(memory) {
@@ -87,18 +97,24 @@ void rpn_parse(char *input[], struct rpn_node * result[], int * result_size) {
     *result_size += 1;
     memory = false;
   }
-  result[*result_size] = rpn_create(op, 0);
-  *result_size += 1;
-  
-  for(i=0; i<*result_size; i++) {
-    //printf("%.6f\n", result[i]->value);
+  while(op_stack != NULL) {
+    result[*result_size] = op_stack;
+    *result_size += 1;
+    rpn_pop(&op_stack, false);
   }
+  /* debug
+  printf("finishing! rpn size: %d\n", *result_size);
+  for(i=0; i<*result_size; i++) {
+    printf("> %.3f - %d\n", result[i]->value, result[i]->type);
+  }
+  printf("finished\n");
+  */
 }
 
 void rpn_getargs(struct rpn_node ** rpn_stack, int size, double result[]) {
   while(size>0) {
     result[size-1] = (*rpn_stack)->value;
-    rpn_pop(rpn_stack);
+    rpn_pop(rpn_stack, true);
     size--;
   }
 }
