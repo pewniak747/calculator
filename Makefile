@@ -4,7 +4,7 @@ LD=gcc
 TARGET=calc
 
 CFLAGS=-g -Wall -o $(TARGET)
-GTKFLAGS=-export-dynamic `pkg-config --cflags --libs gtk+-2.0`
+GTKFLAGS=-export-dynamic `pkg-config --cflags --libs gtk+-3.0`
 LDFLAGS=
 
 SRCS=calc.c rpn.c
