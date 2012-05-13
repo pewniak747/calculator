@@ -18,7 +18,7 @@ int main(int argc, char *argv[]) {
       return(1);
   }
   struct calclist * list = NULL;
-  struct calc_context * context = calc_context_new(builder, &list);
+  calc_context * context = calc_context_new(builder, &list);
   window = GTK_WIDGET( gtk_builder_get_object( builder, "window1" ) );
 
   // connect signals

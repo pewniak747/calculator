@@ -12,8 +12,8 @@ struct calclist * calclist_new(char * input, double output) {
   return new;
 }
 
-struct calc_context * calc_context_new(GtkBuilder * builder, struct calclist ** list) {
-  struct calc_context * context =  malloc(sizeof(struct calc_context));
+calc_context * calc_context_new(GtkBuilder * builder, struct calclist ** list) {
+  calc_context * context =  malloc(sizeof(calc_context));
   context->builder = builder;
   context->list = list;
   return context;

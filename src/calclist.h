@@ -9,13 +9,13 @@ struct calclist {
   double result;
 };
 
-struct calc_context {
+typedef struct {
   struct calclist ** list;
   GtkBuilder * builder;
-};
+} calc_context;
 
 struct calclist * calclist_new(char * input, double output);
-struct calc_context * calc_context_new(GtkBuilder * builder, struct calclist ** list);
+calc_context * calc_context_new(GtkBuilder * builder, struct calclist ** list);
 void calclist_insert(char * input, double output, struct calclist ** list);
 void calclist_rewind(struct calclist ** list);
 void calclist_prev(struct calclist ** list);
