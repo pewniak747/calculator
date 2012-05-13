@@ -224,6 +224,9 @@
             <property name="selectable">True</property>
             <property name="single_line_mode">True</property>
             <property name="max_width_chars">255</property>
+            <attributes>
+              <attribute name="font-desc" value="Monospace 10"/>
+            </attributes>
           </object>
           <packing>
             <property name="expand">True</property>

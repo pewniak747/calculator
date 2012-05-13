@@ -16,4 +16,6 @@ void calclist_prev(calclist ** list);
 void calclist_next(calclist ** list);
 void calclist_free(calclist ** list);
 
+char * format_double(double result);
+
 #endif // CALCLIST

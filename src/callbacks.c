@@ -17,9 +17,8 @@ void callback_calculate(GtkWidget * widget, gpointer cx) {
   calc_context * context = cx;
   char * input = gtk_entry_get_text(GTK_ENTRY(get_widget(context->builder, "query_edit")));
   if(strlen(input) == 0) return;
-  char * output[20];
   rpn_resolve(&input, &result, &error);
-  sprintf(output, "%.6f", result);
+  char * output = format_double(result);
   if(error > 0)
     *output = "ERROR!";
   else {
@@ -43,8 +42,7 @@ void callback_previous(GtkWidget * widget, gpointer cx) {
   calclist_prev(list);
   if(*list == NULL) return;
   gtk_entry_set_text(GTK_ENTRY(get_widget(context->builder, "query_edit")), (*list)->input);
-  char * output[100];
-  sprintf(output, "%.6f", (*list)->result);
+  char * output = format_double((*list)->result);
   gtk_label_set_text(GTK_LABEL(get_widget(context->builder, "result_label")), output);
 }
 
@@ -54,8 +52,7 @@ void callback_next(GtkWidget * widget, gpointer cx) {
   calclist_next(list);
   if(*list == NULL) return;
   gtk_entry_set_text(GTK_ENTRY(get_widget(context->builder, "query_edit")), (*list)->input);
-  char * output[100];
-  sprintf(output, "%.6f", (*list)->result);
+  char * output = format_double((*list)->result);
   gtk_label_set_text(GTK_LABEL(get_widget(context->builder, "result_label")), output);
 }
 
