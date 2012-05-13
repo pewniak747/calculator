@@ -111,9 +111,13 @@ void testDecimalPoint(void) {
   rpn_resolve(&input, &result, &error);
   CU_ASSERT_EQ(result, 5.8);
 
+  *input = "2.5*3";
+  rpn_resolve(&input, &result, &error);
+  CU_ASSERT_EQ(result, 7.5);
+
   *input = "2.5-3.3";
   rpn_resolve(&input, &result, &error);
-  CU_ASSERT_EQ(result, 0.8);
+  CU_ASSERT_EQ(result, -0.8);
 
   *input = "2.5*3.3";
   rpn_resolve(&input, &result, &error);
