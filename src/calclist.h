@@ -2,24 +2,24 @@
 #define CALCLIST
 #include <gtk/gtk.h>
 
-struct calclist {
+typedef struct {
   struct calclist *prev;
   struct calclist *next;
   char input[100];
   double result;
-};
+} calclist;
 
 typedef struct {
-  struct calclist ** list;
+  calclist ** list;
   GtkBuilder * builder;
 } calc_context;
 
-struct calclist * calclist_new(char * input, double output);
-calc_context * calc_context_new(GtkBuilder * builder, struct calclist ** list);
-void calclist_insert(char * input, double output, struct calclist ** list);
-void calclist_rewind(struct calclist ** list);
-void calclist_prev(struct calclist ** list);
-void calclist_next(struct calclist ** list);
-void calclist_free(struct calclist ** list);
+calclist * calclist_new(char * input, double output);
+calc_context * calc_context_new(GtkBuilder * builder, calclist ** list);
+void calclist_insert(char * input, double output, calclist ** list);
+void calclist_rewind(calclist ** list);
+void calclist_prev(calclist ** list);
+void calclist_next(calclist ** list);
+void calclist_free(calclist ** list);
 
 #endif // CALCLIST

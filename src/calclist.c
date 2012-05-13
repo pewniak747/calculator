@@ -3,8 +3,8 @@
 #include <string.h>
 #include "calclist.h"
 
-struct calclist * calclist_new(char * input, double output) {
-  struct calclist * new = malloc(sizeof(struct calclist));
+calclist * calclist_new(char * input, double output) {
+  calclist * new = malloc(sizeof(calclist));
   strcpy(new->input, input);
   new->result = output;
   new->prev = NULL;
@@ -12,7 +12,7 @@ struct calclist * calclist_new(char * input, double output) {
   return new;
 }
 
-calc_context * calc_context_new(GtkBuilder * builder, struct calclist ** list) {
+calc_context * calc_context_new(GtkBuilder * builder, calclist ** list) {
   calc_context * context =  malloc(sizeof(calc_context));
   context->builder = builder;
   context->list = list;
@@ -20,8 +20,8 @@ calc_context * calc_context_new(GtkBuilder * builder, struct calclist ** list) {
 }
 
 
-void calclist_insert(char * input, double output, struct calclist ** list) {
-  struct calclist * new = calclist_new(input, output);
+void calclist_insert(char * input, double output, calclist ** list) {
+  calclist * new = calclist_new(input, output);
   if((*list) == NULL) {
     *list = new;
   }
@@ -33,7 +33,7 @@ void calclist_insert(char * input, double output, struct calclist ** list) {
   }
 }
 
-void calclist_rewind(struct calclist ** list) {
+void calclist_rewind(calclist ** list) {
   if(!(*list)) return;
   while((*list)->prev != NULL) {
     printf("rewinding from %f ", (*list)->result);
@@ -42,19 +42,19 @@ void calclist_rewind(struct calclist ** list) {
   }
 }
 
-void calclist_prev(struct calclist ** list) {
+void calclist_prev(calclist ** list) {
   if((*list) == NULL || (*list)->prev == NULL) return;
   *list = (*list)->prev;
 }
 
-void calclist_next(struct calclist ** list) {
+void calclist_next(calclist ** list) {
   if((*list) == NULL || (*list)->next == NULL) return;
   *list = (*list)->next;
 }
 
-void calclist_free(struct calclist ** list) {
+void calclist_free(calclist ** list) {
   if(*list == NULL) return;
-  struct calclist * tmp;
+  calclist * tmp;
   calclist_rewind(list);
   printf("rewind to %f\n", (*list)->result);
   while(*list != NULL) {

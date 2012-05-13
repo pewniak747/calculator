@@ -38,7 +38,7 @@ void callback_insert(GtkWidget * widget, gpointer builder) {
 
 void callback_previous(GtkWidget * widget, gpointer cx) {
   calc_context * context = cx;
-  struct calclist ** list = context->list;
+  calclist ** list = context->list;
   calclist_prev(list);
   if(*list == NULL) return;
   gtk_entry_set_text(GTK_ENTRY(get_widget(context->builder, "query_edit")), (*list)->input);
@@ -49,7 +49,7 @@ void callback_previous(GtkWidget * widget, gpointer cx) {
 
 void callback_next(GtkWidget * widget, gpointer cx) {
   calc_context * context = cx;
-  struct calclist ** list = context->list;
+  calclist ** list = context->list;
   calclist_next(list);
   if(*list == NULL) return;
   gtk_entry_set_text(GTK_ENTRY(get_widget(context->builder, "query_edit")), (*list)->input);

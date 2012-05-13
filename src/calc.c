@@ -17,7 +17,7 @@ int main(int argc, char *argv[]) {
       g_free(error);
       return(1);
   }
-  struct calclist * list = NULL;
+  calclist * list = NULL;
   calc_context * context = calc_context_new(builder, &list);
   window = GTK_WIDGET( gtk_builder_get_object( builder, "window1" ) );
 
