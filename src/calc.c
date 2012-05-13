@@ -2,6 +2,7 @@
 #include <string.h>
 #include <gtk/gtk.h>
 #include "callbacks.h"
+#include "calclist.h"
 #include "rpn.h"
 
 int main(int argc, char *argv[]) {
@@ -21,6 +22,7 @@ int main(int argc, char *argv[]) {
 
   // connect signals
   g_signal_connect(window, "destroy", G_CALLBACK(callback_quit), NULL);
+  g_signal_connect(GTK_WIDGET(get_widget(builder, "button_quit")), "clicked", G_CALLBACK(callback_quit), NULL);
   g_signal_connect(GTK_WIDGET(get_widget(builder, "button_equals")), "clicked", G_CALLBACK(callback_calculate), builder);
 
   // number buttons
@@ -45,6 +47,25 @@ int main(int argc, char *argv[]) {
   g_signal_connect(GTK_WIDGET(get_widget(builder, "button_clear")), "clicked", G_CALLBACK(callback_clear), builder);
 
   gtk_widget_show(window);
+
+
+  // calclist test
+  struct calclist * list = NULL;
+  calclist_insert("2+2", 4.0, &list);
+  calclist_insert("2+5", 7.0, &list);
+  calclist_insert("4*5", 20.0, &list);
+
+  printf("%f\n", list->result);
+  calclist_next(&list);
+  printf("%f\n", list->result);
+  calclist_prev(&list);
+  printf("%f\n", list->result);
+  calclist_prev(&list);
+  printf("%f\n", list->result);
+  calclist_prev(&list);
+  printf("%f\n", list->result);
+
+  calclist_free(&list);
 
   gtk_main();
   return 0;
