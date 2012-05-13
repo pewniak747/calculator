@@ -57,6 +57,6 @@ int main(int argc, char *argv[]) {
   gtk_widget_show(window);
 
   gtk_main();
-  calclist_free(&list);
+  calc_context_free(context);
   return 0;
 }
