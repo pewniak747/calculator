@@ -11,11 +11,10 @@ int main(int argc, char *argv[]) {
   GError     *error = NULL;
 
   builder = gtk_builder_new();
-  if( ! gtk_builder_add_from_file( builder, "src/calc.glade", &error ) )
-  {
-      g_warning( "%s", error->message );
-      g_free( error );
-      return( 1 );
+  if(!gtk_builder_add_from_file(builder, "src/calc.glade", &error)) {
+      g_warning("%s", error->message);
+      g_free(error);
+      return(1);
   }
 
   window = GTK_WIDGET( gtk_builder_get_object( builder, "window1" ) );
