@@ -17,13 +17,14 @@ int main(int argc, char *argv[]) {
       g_free(error);
       return(1);
   }
-
+  struct calclist * list = NULL;
+  struct calc_context * context = calc_context_new(builder, &list);
   window = GTK_WIDGET( gtk_builder_get_object( builder, "window1" ) );
 
   // connect signals
   g_signal_connect(window, "destroy", G_CALLBACK(callback_quit), NULL);
   g_signal_connect(GTK_WIDGET(get_widget(builder, "button_quit")), "clicked", G_CALLBACK(callback_quit), NULL);
-  g_signal_connect(GTK_WIDGET(get_widget(builder, "button_equals")), "clicked", G_CALLBACK(callback_calculate), builder);
+  g_signal_connect(GTK_WIDGET(get_widget(builder, "button_equals")), "clicked", G_CALLBACK(callback_calculate), context);
 
   // number buttons
   g_signal_connect(GTK_WIDGET(get_widget(builder, "number_0")), "clicked", G_CALLBACK(callback_insert), builder);
@@ -45,28 +46,12 @@ int main(int argc, char *argv[]) {
 
   // action buttons
   g_signal_connect(GTK_WIDGET(get_widget(builder, "button_clear")), "clicked", G_CALLBACK(callback_clear), builder);
+  g_signal_connect(GTK_WIDGET(get_widget(builder, "button_previous")), "clicked", G_CALLBACK(callback_previous), context);
+  g_signal_connect(GTK_WIDGET(get_widget(builder, "button_next")), "clicked", G_CALLBACK(callback_next), context);
 
   gtk_widget_show(window);
 
-
-  // calclist test
-  struct calclist * list = NULL;
-  calclist_insert("2+2", 4.0, &list);
-  calclist_insert("2+5", 7.0, &list);
-  calclist_insert("4*5", 20.0, &list);
-
-  printf("%f\n", list->result);
-  calclist_next(&list);
-  printf("%f\n", list->result);
-  calclist_prev(&list);
-  printf("%f\n", list->result);
-  calclist_prev(&list);
-  printf("%f\n", list->result);
-  calclist_prev(&list);
-  printf("%f\n", list->result);
-
-  calclist_free(&list);
-
   gtk_main();
+  calclist_free(&list);
   return 0;
 }
