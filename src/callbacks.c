@@ -1,4 +1,5 @@
 #include <string.h>
+#include "calc_context.h"
 #include "calclist.h"
 #include "callbacks.h"
 

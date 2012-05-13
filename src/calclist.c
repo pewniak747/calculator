@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include "calc_context.h"
 #include "calclist.h"
 
 calclist * calclist_new(char * input, double output) {
@@ -11,14 +12,6 @@ calclist * calclist_new(char * input, double output) {
   new->next = NULL;
   return new;
 }
-
-calc_context * calc_context_new(GtkBuilder * builder, calclist ** list) {
-  calc_context * context =  malloc(sizeof(calc_context));
-  context->builder = builder;
-  context->list = list;
-  return context;
-}
-
 
 void calclist_insert(char * input, double output, calclist ** list) {
   calclist * new = calclist_new(input, output);

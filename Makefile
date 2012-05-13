@@ -7,7 +7,7 @@ CFLAGS=-g -Wall -o $(TARGET)
 GTKFLAGS=-export-dynamic `pkg-config --cflags --libs gtk+-3.0`
 LDFLAGS=
 
-SRCS=calc.c callbacks.c calclist.c rpn.c
+SRCS=calc.c callbacks.c calc_context.c calclist.c rpn.c
 
 OBJS=$(addsuffix .o, $(SRCS))
 MOBJS=$(addprefix obj/, $(OBJS))

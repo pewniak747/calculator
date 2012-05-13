@@ -2,6 +2,7 @@
 #include <string.h>
 #include <gtk/gtk.h>
 #include "callbacks.h"
+#include "calc_context.h"
 #include "calclist.h"
 #include "rpn.h"
 
