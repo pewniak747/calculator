@@ -1,7 +1,7 @@
 #ifndef RPN_FUNCTIONS
 #define RPN_FUNCTIONS
 
-#include<stdbool.h>
+#include <stdbool.h>
 
 /* function types
  * 0 - value
