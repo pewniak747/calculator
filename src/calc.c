@@ -45,10 +45,14 @@ int main(int argc, char *argv[]) {
   g_signal_connect(GTK_WIDGET(get_widget(builder, "button_multiply")), "clicked", G_CALLBACK(callback_insert), builder);
   g_signal_connect(GTK_WIDGET(get_widget(builder, "button_divide")), "clicked", G_CALLBACK(callback_insert), builder);
 
-  // action buttons
+  // control buttons
   g_signal_connect(GTK_WIDGET(get_widget(builder, "button_clear")), "clicked", G_CALLBACK(callback_clear), builder);
   g_signal_connect(GTK_WIDGET(get_widget(builder, "button_previous")), "clicked", G_CALLBACK(callback_previous), context);
   g_signal_connect(GTK_WIDGET(get_widget(builder, "button_next")), "clicked", G_CALLBACK(callback_next), context);
+
+  g_signal_connect(GTK_WIDGET(get_widget(builder, "button_equals")), "clicked", G_CALLBACK(callback_control_buttons), context);
+  g_signal_connect(GTK_WIDGET(get_widget(builder, "button_next")), "clicked", G_CALLBACK(callback_control_buttons), context);
+  g_signal_connect(GTK_WIDGET(get_widget(builder, "button_previous")), "clicked", G_CALLBACK(callback_control_buttons), context);
 
   gtk_widget_show(window);
 

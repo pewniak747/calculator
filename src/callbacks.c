@@ -59,6 +59,15 @@ void callback_next(GtkWidget * widget, gpointer cx) {
   gtk_label_set_text(GTK_LABEL(get_widget(context->builder, "result_label")), output);
 }
 
+void callback_control_buttons(GtkWidget * widget, gpointer cx) {
+  calc_context * context = cx;
+  calclist ** list = context->list;
+  if((*list)->prev == NULL) gtk_widget_set_sensitive(GTK_WIDGET(get_widget(context->builder, "button_previous")), FALSE);
+  else gtk_widget_set_sensitive(GTK_WIDGET(get_widget(context->builder, "button_previous")), TRUE);
+  if((*list)->next == NULL) gtk_widget_set_sensitive(GTK_WIDGET(get_widget(context->builder, "button_next")), FALSE);
+  else gtk_widget_set_sensitive(GTK_WIDGET(get_widget(context->builder, "button_next")), TRUE);
+}
+
 void callback_clear(GtkWidget * widget, gpointer builder) {
   gtk_entry_set_text(GTK_ENTRY(get_widget(builder, "query_edit")), "");
   gtk_label_set_text(GTK_LABEL(get_widget(builder, "result_label")), "0");

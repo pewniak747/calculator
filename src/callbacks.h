@@ -8,6 +8,7 @@ void callback_calculate(GtkWidget * widget, gpointer context);
 void callback_insert(GtkWidget * widget, gpointer builder);
 void callback_previous(GtkWidget * widget, gpointer context);
 void callback_next(GtkWidget * widget, gpointer context);
+void callback_control_buttons(GtkWidget * widget, gpointer context);
 void callback_clear(GtkWidget * widget, gpointer builder);
 
 #endif // CALLBACKS
