@@ -61,5 +61,6 @@ void callback_next(GtkWidget * widget, gpointer cx) {
 
 void callback_clear(GtkWidget * widget, gpointer builder) {
   gtk_entry_set_text(GTK_ENTRY(get_widget(builder, "query_edit")), "");
+  gtk_label_set_text(GTK_LABEL(get_widget(builder, "result_label")), "0");
 }
 
