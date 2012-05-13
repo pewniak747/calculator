@@ -155,29 +155,14 @@ void rpn_resolve(char * input[], double * result, int * error) {
   struct rpn_node *rpn_expression[rpn_size];
   rpn_parse(input, rpn_expression, &rpn_size);
   struct rpn_node *rpn_stack = 0;
+  double (*functions[6])(struct rpn_node ** rpn_stack) = {NULL, rpn_addition, rpn_substraction, rpn_multiplication, rpn_division, rpn_exponentation};
   int i=0;
   for(i=0; i<rpn_size; i++) {
     if(rpn_expression[i]->type == 0) {
       rpn_push(&rpn_stack, rpn_expression[i]);
     }
     else {
-      switch(rpn_expression[i]->type) {
-        case 1 :
-          rpn_addition(&rpn_stack);
-          break;
-        case 2 :
-          rpn_substraction(&rpn_stack);
-          break;
-        case 3 :
-          rpn_multiplication(&rpn_stack);
-          break;
-        case 4 :
-          rpn_division(&rpn_stack);
-          break;
-        case 5 :
-          rpn_exponentation(&rpn_stack);
-          break;
-      }
+      functions[rpn_expression[i]->type](&rpn_stack);
       free(rpn_expression[i]);
     }
   }
