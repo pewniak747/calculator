@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
+#include <math.h>
 #include "rpn.h"
 
 int rpn_opcode(char op) {
@@ -11,8 +12,13 @@ int rpn_opcode(char op) {
     case '-': result = 2; break;
     case '*': result = 3; break;
     case '/': result = 4; break;
+    case '^': result = 5; break;
   }
   return result;
+}
+
+bool rpn_isop(char token) {
+  return token == '+' || token == '-' || token == '*' || token == '/' || token == '^';
 }
 
 int rpn_precedence(int op) {
@@ -21,6 +27,7 @@ int rpn_precedence(int op) {
     case 2: op = 1; break;
     case 3: op = 2; break;
     case 4: op = 2; break;
+    case 5: op = 3; break;
   }
   return op;
 }
@@ -55,7 +62,7 @@ void rpn_parse(char *input[], struct rpn_node * result[], int * result_size) {
   struct rpn_node * op_stack = 0;
   for(i=0; i<input_size; i++) {
     token = (*input)[i];
-    if(token == '+' || token == '-' || token == '*' || token == '/') {
+    if(rpn_isop(token)) {
       if(memory) {
         result[*result_size] = rpn_create(0, memory_value);
         *result_size += 1;
@@ -133,6 +140,12 @@ void rpn_division(struct rpn_node ** rpn_stack) {
   rpn_push(rpn_stack, rpn_create(0, args[0]/args[1]));
 }
 
+void rpn_exponentation(struct rpn_node ** rpn_stack) {
+  double args[2];
+  rpn_getargs(rpn_stack, 2, args);
+  rpn_push(rpn_stack, rpn_create(0, pow(args[0], args[1])));
+}
+
 void rpn_resolve(char * input[], double * result, int * error) {
   if(*input == NULL || strlen(*input) == 0) {
     *error = 1;
@@ -160,6 +173,9 @@ void rpn_resolve(char * input[], double * result, int * error) {
           break;
         case 4 :
           rpn_division(&rpn_stack);
+          break;
+        case 5 :
+          rpn_exponentation(&rpn_stack);
           break;
       }
       free(rpn_expression[i]);

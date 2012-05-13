@@ -4,9 +4,9 @@ LD=gcc
 TARGET=calc
 TEST_TARGET=calc_test
 
-CFLAGS=-g -Wall -o $(TARGET)
+CFLAGS=-g -Wall -lm -o $(TARGET)
 GTKFLAGS=-export-dynamic `pkg-config --cflags --libs gtk+-3.0`
-LDFLAGS=
+LDFLAGS=-lm
 TESTFLAGS=-lcunit
 
 SRCS=calc.c callbacks.c calc_context.c calclist.c rpn.c
@@ -18,7 +18,7 @@ MOBJS=$(addprefix obj/, $(OBJS))
 MTEST_OBJS=$(addprefix obj/, $(TEST_OBJS))
 
 $(TARGET): $(OBJS) 
-	$(LD) $(LDFLAGS) $(MOBJS) -o $(TARGET) $(GTKFLAGS)
+	$(LD) $(MOBJS) -o $(TARGET) $(GTKFLAGS) $(LDFLAGS) 
 
 %.c.o: src/%.c
 	$(CC) -c $(CFLAGS) $< -o obj/$@ $(GTKFLAGS)
@@ -30,5 +30,5 @@ clean:
 	rm obj/* $(TARGET) $(TEST_TARGET)
 
 test: $(TEST_OBJS)
-	$(CC) $(MTEST_OBJS) -o $(TEST_TARGET) -lcunit
+	$(LD) $(MTEST_OBJS) -o $(TEST_TARGET) -lcunit $(LDFLAGS) 
 	./$(TEST_TARGET)

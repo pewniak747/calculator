@@ -96,7 +96,7 @@ void testExponentation(void) {
   
   *input = "4^(1/2)";
   rpn_resolve(&input, &result, &error);
-  CU_ASSERT_EQ(error, 2);
+  CU_ASSERT_EQ(result, 2);
 }
 void testDecimalPoint(void) {
   *input = "2.0";
@@ -140,6 +140,10 @@ void testPrecedence(void) {
   *input = "2*4+1+3*4/2";
   rpn_resolve(&input, &result, &error);
   CU_ASSERT_EQ(result, 15);
+
+  *input = "2*4^2/8";
+  rpn_resolve(&input, &result, &error);
+  CU_ASSERT_EQ(result, 4);
 }
 
 void testBrackets(void) {
