@@ -212,18 +212,18 @@ int main() {
   pSuite = CU_add_suite("RPN resolve test", NULL, NULL);
 
   // add tests
-  CU_add_test(pSuite, "test of sanity", testSanity);
-  CU_add_test(pSuite, "test of singular number", testSingular);
-  CU_add_test(pSuite, "test of addition", testAddition);
-  CU_add_test(pSuite, "test of subtraction", testSubtraction);
-  CU_add_test(pSuite, "test of multiplication", testMultiplication);
-  CU_add_test(pSuite, "test of division", testDivision);
-  CU_add_test(pSuite, "test of exponentation", testExponentation);
-  CU_add_test(pSuite, "test of decimal point", testDecimalPoint);
-  CU_add_test(pSuite, "test of operator precedence", testPrecedence);
-  CU_add_test(pSuite, "test of brackets", testBrackets);
-  //CU_add_test(pSuite, "test of unary minus", testUnaryMinus);
-  CU_add_test(pSuite, "test of errors", testErrors);
+  CU_add_test(pSuite, "sanity", testSanity);
+  CU_add_test(pSuite, "singular number", testSingular);
+  CU_add_test(pSuite, "addition", testAddition);
+  CU_add_test(pSuite, "subtraction", testSubtraction);
+  CU_add_test(pSuite, "multiplication", testMultiplication);
+  CU_add_test(pSuite, "division", testDivision);
+  CU_add_test(pSuite, "exponentation", testExponentation);
+  CU_add_test(pSuite, "decimal point", testDecimalPoint);
+  CU_add_test(pSuite, "operator precedence", testPrecedence);
+  CU_add_test(pSuite, "brackets", testBrackets);
+  //CU_add_test(pSuite, "unary minus", testUnaryMinus);
+  CU_add_test(pSuite, "errors", testErrors);
 
   // run tests
   CU_basic_set_mode(CU_BRM_VERBOSE);
