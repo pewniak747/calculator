@@ -14,15 +14,13 @@ calclist * calclist_new(char * input, double output) {
   return new;
 }
 
-char * format_double(double result) {
-  char * output[100];
+void format_double(double result, char * output) {
   if(fmod(result, 1) < 0.000001) {
     sprintf(output, "%.0f", result);
   }
   else {
     sprintf(output, "%.6f", result);
   }
-  return output;
 }
 
 void calclist_insert(char * input, double output, calclist ** list) {

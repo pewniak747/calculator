@@ -18,13 +18,14 @@ void callback_calculate(GtkWidget * widget, gpointer cx) {
   char * input = gtk_entry_get_text(GTK_ENTRY(get_widget(context->builder, "query_edit")));
   if(strlen(input) == 0) return;
   rpn_resolve(&input, &result, &error);
-  char * output = format_double(result);
-  if(error > 0)
-    *output = "ERROR!";
-  else {
-    calclist_insert(input, result, context->list);
-  }
+  char * output[100];
+  format_double(result, output);
   g_print("%s\n", output);
+  if(error == 0)
+    calclist_insert(input, result, context->list);
+  else {
+    *output = "ERROR!";
+  }
   gtk_label_set_text(GTK_LABEL(get_widget(context->builder, "result_label")), output);
 }
 
@@ -42,7 +43,8 @@ void callback_previous(GtkWidget * widget, gpointer cx) {
   calclist_prev(list);
   if(*list == NULL) return;
   gtk_entry_set_text(GTK_ENTRY(get_widget(context->builder, "query_edit")), (*list)->input);
-  char * output = format_double((*list)->result);
+  char * output[100];
+  format_double((*list)->result, output);
   gtk_label_set_text(GTK_LABEL(get_widget(context->builder, "result_label")), output);
 }
 
@@ -52,7 +54,8 @@ void callback_next(GtkWidget * widget, gpointer cx) {
   calclist_next(list);
   if(*list == NULL) return;
   gtk_entry_set_text(GTK_ENTRY(get_widget(context->builder, "query_edit")), (*list)->input);
-  char * output = format_double((*list)->result);
+  char * output[100];
+  format_double((*list)->result, output);
   gtk_label_set_text(GTK_LABEL(get_widget(context->builder, "result_label")), output);
 }
 
