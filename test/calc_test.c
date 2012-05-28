@@ -153,6 +153,17 @@ void testUnaryMinus(void) {
   CU_ASSERT_EQ(result, -13);
 }
 
+void testSqrt(void) {
+  rpn_resolve("sqrt(2)", &result, &error);
+  CU_ASSERT_EQ(result, 1.414213562);
+
+  rpn_resolve("1-sqrt(2)", &result, &error);
+  CU_ASSERT_EQ(result, 0.414213562);
+
+  rpn_resolve("sqrt(2)*sqrt(2)", &result, &error);
+  CU_ASSERT_EQ(result, 0.414213562);
+}
+
 void testErrors(void) {
   rpn_resolve("3/0", &result, &error);
   CU_ASSERT_EQ(error, 1);
@@ -179,6 +190,7 @@ int main() {
   CU_add_test(pSuite, "decimal point", testDecimalPoint);
   CU_add_test(pSuite, "operator precedence", testPrecedence);
   CU_add_test(pSuite, "brackets", testBrackets);
+  CU_add_test(pSuite, "square root", testSqrt);
   //CU_add_test(pSuite, "unary minus", testUnaryMinus);
   CU_add_test(pSuite, "errors", testErrors);
 
