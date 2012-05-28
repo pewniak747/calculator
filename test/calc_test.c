@@ -1,14 +1,13 @@
-#include "../src/rpn.h"
 #include <stdlib.h>
 #include <CUnit/CUnit.h>
 #include <CUnit/Basic.h>
+#include "../src/rpn.h"
 
 #define EPS 0.000001
 #define CU_ASSERT_EQ(i1, i2) CU_ASSERT(abs(i1 - i2) < EPS)
 
 double result;
 int error;
-char * input[100];
 
 void testSanity(void) {
   int i1 = 2, i2 = 1;
@@ -16,191 +15,149 @@ void testSanity(void) {
 }
 
 void testSingular(void) {
-  *input = "2";
-  rpn_resolve(&input, &result, &error);
+  rpn_resolve("2", &result, &error);
   CU_ASSERT_EQ(result, 2);
 }
 
 void testAddition(void) {
-  *input = "2+2";
-  rpn_resolve(&input, &result, &error);
+  rpn_resolve("2+2", &result, &error);
   CU_ASSERT_EQ(result, 4);
 
-  *input = "1+2+3";
-  rpn_resolve(&input, &result, &error);
+  rpn_resolve("1+2+3", &result, &error);
   CU_ASSERT_EQ(result, 6);
 }
 
 void testSubtraction(void) {
-  *input = "10-2";
-  rpn_resolve(&input, &result, &error);
+  rpn_resolve("10-2", &result, &error);
   CU_ASSERT_EQ(result, 8);
 
-  *input = "4-3-9";
-  rpn_resolve(&input, &result, &error);
+  rpn_resolve("4-3-9", &result, &error);
   CU_ASSERT_EQ(result, -8);
 }
 
 void testMultiplication(void) {
-  *input = "1*2";
-  rpn_resolve(&input, &result, &error);
+  rpn_resolve("1*2", &result, &error);
   CU_ASSERT_EQ(result, 2);
 
-  *input = "4*3";
-  rpn_resolve(&input, &result, &error);
+  rpn_resolve("4*3", &result, &error);
   CU_ASSERT_EQ(result, 12);
 
-  *input = "0*3";
-  rpn_resolve(&input, &result, &error);
+  rpn_resolve("0*3", &result, &error);
   CU_ASSERT_EQ(result, 0);
 
-  *input = "2*3*4";
-  rpn_resolve(&input, &result, &error);
+  rpn_resolve("2*3*4", &result, &error);
   CU_ASSERT_EQ(result, 24);
 }
 
 void testDivision(void) {
-  *input = "1/2";
-  rpn_resolve(&input, &result, &error);
+  rpn_resolve("1/2", &result, &error);
   CU_ASSERT_EQ(result, 1/2);
 
-  *input = "4/3";
-  rpn_resolve(&input, &result, &error);
+  rpn_resolve("4/3", &result, &error);
   CU_ASSERT_EQ(result, 4/3);
 
-  *input = "0/3";
-  rpn_resolve(&input, &result, &error);
+  rpn_resolve("0/3", &result, &error);
   CU_ASSERT_EQ(result, 0);
 
-  *input = "2/3/4";
-  rpn_resolve(&input, &result, &error);
+  rpn_resolve("2/3/4", &result, &error);
   CU_ASSERT_EQ(result, 2/12);
 }
 
 void testExponentation(void) {
-  *input = "1^2";
-  rpn_resolve(&input, &result, &error);
+  rpn_resolve("1^2", &result, &error);
   CU_ASSERT_EQ(result, 1);
 
-  *input = "4^2";
-  rpn_resolve(&input, &result, &error);
+  rpn_resolve("4^2", &result, &error);
   CU_ASSERT_EQ(result, 16);
 
-  *input = "3^0";
-  rpn_resolve(&input, &result, &error);
+  rpn_resolve("3^0", &result, &error);
   CU_ASSERT_EQ(result, 1);
 
-  *input = "2^3^4";
-  rpn_resolve(&input, &result, &error);
+  rpn_resolve("2^3^4", &result, &error);
   CU_ASSERT_EQ(result, 262144);
-  
-  *input = "4^(1/2)";
-  rpn_resolve(&input, &result, &error);
+
+  rpn_resolve("4^(1/2)", &result, &error);
   CU_ASSERT_EQ(result, 2);
 }
 void testDecimalPoint(void) {
-  *input = "2.0";
-  rpn_resolve(&input, &result, &error);
+  rpn_resolve("2.0", &result, &error);
   CU_ASSERT_EQ(result, 2);
 
-  *input = "2.12345";
-  rpn_resolve(&input, &result, &error);
+  rpn_resolve("2.12345", &result, &error);
   CU_ASSERT_EQ(result, 2.12345);
 
-  *input = "2.5+3.3";
-  rpn_resolve(&input, &result, &error);
+  rpn_resolve("2.5+3.3", &result, &error);
   CU_ASSERT_EQ(result, 5.8);
 
-  *input = "2.5*3";
-  rpn_resolve(&input, &result, &error);
+  rpn_resolve("2.5*3", &result, &error);
   CU_ASSERT_EQ(result, 7.5);
 
-  *input = "2.5-3.3";
-  rpn_resolve(&input, &result, &error);
+  rpn_resolve("2.5-3.3", &result, &error);
   CU_ASSERT_EQ(result, -0.8);
 
-  *input = "2.5*3.3";
-  rpn_resolve(&input, &result, &error);
+  rpn_resolve("2.5*3.3", &result, &error);
   CU_ASSERT_EQ(result, 8.25);
 
-  *input = "2.5/3.3";
-  rpn_resolve(&input, &result, &error);
+  rpn_resolve("2.5/3.3", &result, &error);
   CU_ASSERT_EQ(result, 0.757575758);
 }
 
 void testPrecedence(void) {
-  *input = "2+3*4";
-  rpn_resolve(&input, &result, &error);
+  rpn_resolve("2+3*4", &result, &error);
   CU_ASSERT_EQ(result, 14);
 
-  *input = "2+3*4-1";
-  rpn_resolve(&input, &result, &error);
+  rpn_resolve("2+3*4-1", &result, &error);
   CU_ASSERT_EQ(result, 13);
 
-  *input = "2+3*4/2-1";
-  rpn_resolve(&input, &result, &error);
+  rpn_resolve("2+3*4/2-1", &result, &error);
   CU_ASSERT_EQ(result, 7);
 
-  *input = "2*4+1+3*4/2";
-  rpn_resolve(&input, &result, &error);
+  rpn_resolve("2*4+1+3*4/2", &result, &error);
   CU_ASSERT_EQ(result, 15);
 
-  *input = "2*4^2/8";
-  rpn_resolve(&input, &result, &error);
+  rpn_resolve("2*4^2/8", &result, &error);
   CU_ASSERT_EQ(result, 4);
 }
 
 void testBrackets(void) {
-  *input = "(2)";
-  rpn_resolve(&input, &result, &error);
+  rpn_resolve("(2)", &result, &error);
   CU_ASSERT_EQ(result, 2);
 
-  *input = "(2+3)*4";
-  rpn_resolve(&input, &result, &error);
+  rpn_resolve("(2+3)*4", &result, &error);
   CU_ASSERT_EQ(result, 20);
 
-  *input = "(2+3)*(4-1)";
-  rpn_resolve(&input, &result, &error);
+  rpn_resolve("(2+3)*(4-1)", &result, &error);
   CU_ASSERT_EQ(result, 15);
 
-  *input = "(2+(1+3)/2)*(4-1)";
-  rpn_resolve(&input, &result, &error);
+  rpn_resolve("(2+(1+3)/2)*(4-1)", &result, &error);
   CU_ASSERT_EQ(result, 12);
 }
 
 void testUnaryMinus(void) {
-  *input = "-8";
-  rpn_resolve(&input, &result, &error);
+  rpn_resolve("-8", &result, &error);
   CU_ASSERT_EQ(result, -8);
-  
-  *input = "(-8)";
-  rpn_resolve(&input, &result, &error);
+
+  rpn_resolve("(-8)", &result, &error);
   CU_ASSERT_EQ(result, -8);
-  
-  *input = "-2+3";
-  rpn_resolve(&input, &result, &error);
+
+  rpn_resolve("-2+3", &result, &error);
   CU_ASSERT_EQ(result, -1);
-  
-  *input = "7*-2";
-  rpn_resolve(&input, &result, &error);
+
+  rpn_resolve("7*-2", &result, &error);
   CU_ASSERT_EQ(result, -14);
-  
-  *input = "-(2+2)";
-  rpn_resolve(&input, &result, &error);
+
+  rpn_resolve("-(2+2)", &result, &error);
   CU_ASSERT_EQ(result, -4);
-  
-  *input = "-(2+2*3)-1";
-  rpn_resolve(&input, &result, &error);
+
+  rpn_resolve("-(2+2*3)-1", &result, &error);
   CU_ASSERT_EQ(result, -13);
 }
 
 void testErrors(void) {
-  *input = "3/0";
-  rpn_resolve(&input, &result, &error);
+  rpn_resolve("3/0", &result, &error);
   CU_ASSERT_EQ(error, 1);
-  
-  *input = "2/3/0";
-  rpn_resolve(&input, &result, &error);
+
+  rpn_resolve("2/3/0", &result, &error);
   CU_ASSERT_EQ(error, 1);
 }
 

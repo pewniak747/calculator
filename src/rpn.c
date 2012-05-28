@@ -13,6 +13,7 @@ int rpn_opcode(char op) {
     case '*': result = 3; break;
     case '/': result = 4; break;
     case '^': result = 5; break;
+    default: result = 0; break;
   }
   return result;
 }
@@ -53,8 +54,8 @@ struct rpn_node* rpn_create(int type, double value) {
   return new_node;
 }
 
-void rpn_parse(char *input[], struct rpn_node * result[], int * result_size) {
-  int i=0, input_size = strlen(*input), op = 0;
+void rpn_parse(char *input, struct rpn_node *result[], int *result_size, int *error) {
+  int i=0, input_size = strlen(input), op = 0;
   *result_size = 0;
   double memory_value;
   bool memory = false;
@@ -62,7 +63,7 @@ void rpn_parse(char *input[], struct rpn_node * result[], int * result_size) {
   char token;
   struct rpn_node * op_stack = 0;
   for(i=0; i<input_size; i++) {
-    token = (*input)[i];
+    token = input[i];
     if(token == '.') {
       decimal = 1;
     }
@@ -157,14 +158,55 @@ void rpn_exponentation(struct rpn_node ** rpn_stack) {
   rpn_push(rpn_stack, rpn_create(0, pow(args[0], args[1])));
 }
 
-void rpn_resolve(char * input[], double * result, int * error) {
-  if(*input == NULL || strlen(*input) == 0) {
+void rpn_tokenize(char *input, char *output[], int *size, int *error) {
+  char *buffer = malloc(100*sizeof(char));
+  char *nbuffer = malloc(100*sizeof(char));
+  char current;
+  int i;
+  *size = 0;
+  for(i=0; i<strlen(input); i++) {
+    current = input[i];
+    printf("> %c\n", current);
+    if((current-48 >= 0 && current-48 <=9) || current == 46) {
+      strncat(nbuffer, &current, 1);
+    }
+    else if(rpn_isop(current) || current == '(' || current == ')') {
+      if(strlen(nbuffer) > 0) {
+        output[*size] = malloc(30*sizeof(char));
+        strcpy(output[*size], nbuffer);
+        strcpy(nbuffer, "");
+        *size = *size + 1;
+      }
+      output[*size] = malloc(30*sizeof(char));
+      strncat(output[*size], &current, 1);
+      *size = *size + 1;
+    }
+  }
+  if(strlen(nbuffer) > 0) {
+    output[*size] = malloc(30*sizeof(char));
+    strcpy(output[*size], nbuffer);
+    strcpy(nbuffer, "");
+    *size = *size + 1;
+  }
+}
+
+void rpn_resolve(char *input, double *result, int *error) {
+  if(strlen(input) == 0) {
     *error = 1;
     return;
   }
-  int rpn_size = 10;
+  int rpn_size = 100;
+  /*
+  char *tokenized_input[1000];
+  rpn_tokenize(input, tokenized_input, &rpn_size, error);
+  printf("\nexpression: %s\ntokens: ", input);
+  int i;
+  for(i = 0; i<rpn_size; i++) printf("%s ", tokenized_input[i]);
+  printf("\n\n");
+  */
   struct rpn_node *rpn_expression[rpn_size];
-  rpn_parse(input, rpn_expression, &rpn_size);
+  rpn_parse(input, rpn_expression, &rpn_size, error);
+  if(*error > 0) return;
   struct rpn_node *rpn_stack = 0;
   double (*functions[6])(struct rpn_node ** rpn_stack) = {
     NULL,

@@ -30,7 +30,8 @@ void rpn_substraction(struct rpn_node ** rpn_stack);
 void rpn_multiplication(struct rpn_node ** rpn_stack);
 void rpn_division(struct rpn_node ** rpn_stack);
 
-void rpn_parse(char *input[], struct rpn_node * result[], int * result_size);
-void rpn_resolve(char * input[], double * result, int * error);
+void rpn_tokenize(char *input, char **output, int * size, int * error);
+void rpn_parse(char *input, struct rpn_node * result[], int * result_size, int * error);
+void rpn_resolve(char *input, double * result, int * error);
 
 #endif // RPN_FUNCTIONS
