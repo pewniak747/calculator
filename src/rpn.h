@@ -22,6 +22,9 @@ void rpn_pop(struct rpn_node ** rpn_stack, bool fr);
 struct rpn_node* rpn_create(int type, double value);
 
 int rpn_opcode(char op);
+bool rpn_isop(char op);
+bool rpn_isnum(char *num);
+double rpn_parsenum(char *num);
 int rpn_precedence(int op);
 void rpn_getargs(struct rpn_node ** rpn_stack, int size, double result[]);
 
@@ -31,7 +34,7 @@ void rpn_multiplication(struct rpn_node ** rpn_stack);
 void rpn_division(struct rpn_node ** rpn_stack);
 
 void rpn_tokenize(char *input, char **output, int * size, int * error);
-void rpn_parse(char *input, struct rpn_node * result[], int * result_size, int * error);
+void rpn_parse(char **input, struct rpn_node * result[], int * result_size, int * error);
 void rpn_resolve(char *input, double * result, int * error);
 
 #endif // RPN_FUNCTIONS

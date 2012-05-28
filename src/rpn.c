@@ -22,6 +22,19 @@ bool rpn_isop(char token) {
   return token == '+' || token == '-' || token == '*' || token == '/' || token == '^';
 }
 
+bool rpn_isnum(char *num) {
+  bool decimal = false;
+  int i;
+  for(i=0; i<strlen(num); i++) {
+    if(num[i] == '.') {
+      if(decimal) return false;
+      else decimal = true;
+    }
+    else if(num[i]-48 < 0 || num[i]-48 > 9) return false;
+  }
+  return true;
+}
+
 int rpn_precedence(int op) {
   switch(op) {
     case 1: op = 1; break;
@@ -31,6 +44,25 @@ int rpn_precedence(int op) {
     case 5: op = 3; break;
   }
   return op;
+}
+
+double rpn_parsenum(char *num) {
+  int decimal = 0, i;
+  double result = 0;
+  for(i=0; i<strlen(num); i++) {
+    if(num[i] == '.') decimal = 10;
+    else {
+      if(decimal > 0) {
+        result += (num[i]-48)/decimal;
+        decimal *= 10; 
+      }
+      else {
+        result *= 10;
+        result += (num[i]-48);
+      }
+    }
+  }
+  return result;
 }
 
 void rpn_push(struct rpn_node ** rpn_stack, struct rpn_node * new_node) {
@@ -54,61 +86,45 @@ struct rpn_node* rpn_create(int type, double value) {
   return new_node;
 }
 
-void rpn_parse(char *input, struct rpn_node *result[], int *result_size, int *error) {
-  int i=0, input_size = strlen(input), op = 0;
+void rpn_parse(char **input, struct rpn_node *result[], int *result_size, int *error) {
+  int i=0, input_size = *result_size, op = 0;
   *result_size = 0;
-  double memory_value;
-  bool memory = false;
-  int decimal = 0;
-  char token;
+  char *token;
   struct rpn_node * op_stack = 0;
   for(i=0; i<input_size; i++) {
     token = input[i];
-    if(token == '.') {
-      decimal = 1;
+    if(rpn_isnum(token)) {
+      result[*result_size] = rpn_create(0, rpn_parsenum(token));
+      (*result_size) ++;
     }
-    else if(rpn_isop(token)) {
-      if(memory) {
-        result[*result_size] = rpn_create(0, memory_value);
-        *result_size += 1;
-        memory = false;
-        decimal = 0;
-      }
-      op = rpn_opcode(token);
+    else if(false) { // rpn_is_function
+    
+    }
+    else if(rpn_isop(token[0])) {
+      op = rpn_opcode(token[0]);
       if(!(op_stack == NULL || rpn_precedence(op_stack->type) < rpn_precedence(op))) {
         while(op_stack != NULL && rpn_precedence(op_stack->type) > rpn_precedence(op)) {
           result[*result_size] = op_stack;
-          *result_size += 1;
+          (*result_size) ++;
           rpn_pop(&op_stack, false);
         }
       }
       rpn_push(&op_stack, rpn_create(op, 0));
     }
-    else {
-      if(memory) {
-        if(decimal > 0) {
-          memory_value += ((int)(token)-48)/pow(10, decimal);
-          decimal = decimal+1;
-        }
-        else {
-          memory_value *= 10;
-          memory_value += (int)(token)-48;
-        }
-      }
-      else {
-        memory_value = (int)(token)-48;
-        memory = true;
-      }
+    else if(token == '(') {
+    
     }
-  }
-  if(memory) {
-    result[*result_size] = rpn_create(0, memory_value);
-    *result_size += 1;
-    memory = false;
+    else if(token == ')') {
+    
+    }
+    else {
+      *error = 1;
+      return;
+    }
   }
   while(op_stack != NULL) {
     result[*result_size] = op_stack;
-    *result_size += 1;
+    (*result_size) ++;
     rpn_pop(&op_stack, false);
   }
   /* debug
@@ -166,14 +182,13 @@ void rpn_tokenize(char *input, char *output[], int *size, int *error) {
   *size = 0;
   for(i=0; i<strlen(input); i++) {
     current = input[i];
-    printf("> %c\n", current);
     if(current == ' ') continue;
     else if((current-48 >= 0 && current-48 <=9) || current == 46) {
       if(strlen(buffer) > 0) {
         output[*size] = malloc(30*sizeof(char));
         strcpy(output[*size], buffer);
         strcpy(buffer, "");
-        *size = *size + 1;
+        (*size) ++;
       }
       strncat(nbuffer, &current, 1);
     }
@@ -182,17 +197,17 @@ void rpn_tokenize(char *input, char *output[], int *size, int *error) {
         output[*size] = malloc(30*sizeof(char));
         strcpy(output[*size], nbuffer);
         strcpy(nbuffer, "");
-        *size = *size + 1;
+        (*size) ++;
       }
       if(strlen(buffer) > 0) {
         output[*size] = malloc(30*sizeof(char));
         strcpy(output[*size], buffer);
         strcpy(buffer, "");
-        *size = *size + 1;
+        (*size) ++;
       }
       output[*size] = malloc(30*sizeof(char));
       strncat(output[*size], &current, 1);
-      *size = *size + 1;
+      (*size) ++;
     }
     else {
       strncat(buffer, &current, 1);
@@ -202,7 +217,7 @@ void rpn_tokenize(char *input, char *output[], int *size, int *error) {
     output[*size] = malloc(30*sizeof(char));
     strcpy(output[*size], nbuffer);
     strcpy(nbuffer, "");
-    *size = *size + 1;
+    (*size) ++;
   }
 }
 
@@ -212,13 +227,18 @@ void rpn_resolve(char *input, double *result, int *error) {
     return;
   }
   int rpn_size = 100, i;
+
   char *tokenized_input[1000];
   rpn_tokenize(input, tokenized_input, &rpn_size, error);
+  /*
   printf("\nexpression: %s\ntokens: ", input);
   for(i = 0; i<rpn_size; i++) printf("%s ", tokenized_input[i]);
   printf("\n\n");
+  */
+
   struct rpn_node *rpn_expression[rpn_size];
-  rpn_parse(input, rpn_expression, &rpn_size, error);
+  rpn_parse(tokenized_input, rpn_expression, &rpn_size, error);
+
   if(*error > 0) return;
   struct rpn_node *rpn_stack = 0;
   double (*functions[6])(struct rpn_node ** rpn_stack) = {
