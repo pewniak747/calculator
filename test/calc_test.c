@@ -1,10 +1,11 @@
 #include <stdlib.h>
+#include <math.h>
 #include <CUnit/CUnit.h>
 #include <CUnit/Basic.h>
 #include "../src/rpn.h"
 
 #define EPS 0.000001
-#define CU_ASSERT_EQ(i1, i2) CU_ASSERT(abs(i1 - i2) < EPS)
+#define CU_ASSERT_EQ(i1, i2) CU_ASSERT(fabs((i1)-(i2))<EPS)
 
 double result;
 int error;
@@ -15,11 +16,13 @@ void testSanity(void) {
 }
 
 void testSingular(void) {
+  error = 0;
   rpn_resolve("2", &result, &error);
   CU_ASSERT_EQ(result, 2);
 }
 
 void testAddition(void) {
+  error = 0;
   rpn_resolve("2+2", &result, &error);
   CU_ASSERT_EQ(result, 4);
 
@@ -28,6 +31,7 @@ void testAddition(void) {
 }
 
 void testSubtraction(void) {
+  error = 0;
   rpn_resolve("10-2", &result, &error);
   CU_ASSERT_EQ(result, 8);
 
@@ -36,6 +40,7 @@ void testSubtraction(void) {
 }
 
 void testMultiplication(void) {
+  error = 0;
   rpn_resolve("1*2", &result, &error);
   CU_ASSERT_EQ(result, 2);
 
@@ -50,20 +55,22 @@ void testMultiplication(void) {
 }
 
 void testDivision(void) {
+  error = 0;
   rpn_resolve("1/2", &result, &error);
-  CU_ASSERT_EQ(result, 1/2);
+  CU_ASSERT_EQ(result, 1.0/2);
 
   rpn_resolve("4/3", &result, &error);
-  CU_ASSERT_EQ(result, 4/3);
+  CU_ASSERT_EQ(result, 4.0/3);
 
   rpn_resolve("0/3", &result, &error);
   CU_ASSERT_EQ(result, 0);
 
   rpn_resolve("2/3/4", &result, &error);
-  CU_ASSERT_EQ(result, 2/12);
+  CU_ASSERT_EQ(result, 2.0/12);
 }
 
 void testExponentation(void) {
+  error = 0;
   rpn_resolve("1^2", &result, &error);
   CU_ASSERT_EQ(result, 1);
 
@@ -80,6 +87,7 @@ void testExponentation(void) {
   CU_ASSERT_EQ(result, 2);
 }
 void testDecimalPoint(void) {
+  error = 0;
   rpn_resolve("2.0", &result, &error);
   CU_ASSERT_EQ(result, 2);
 
@@ -103,6 +111,7 @@ void testDecimalPoint(void) {
 }
 
 void testPrecedence(void) {
+  error = 0;
   rpn_resolve("2+3*4", &result, &error);
   CU_ASSERT_EQ(result, 14);
 
@@ -120,6 +129,7 @@ void testPrecedence(void) {
 }
 
 void testBrackets(void) {
+  error = 0;
   rpn_resolve("(2)", &result, &error);
   CU_ASSERT_EQ(result, 2);
 
@@ -134,6 +144,7 @@ void testBrackets(void) {
 }
 
 void testUnaryMinus(void) {
+  error = 0;
   rpn_resolve("-8", &result, &error);
   CU_ASSERT_EQ(result, -8);
 
@@ -154,6 +165,7 @@ void testUnaryMinus(void) {
 }
 
 void testSqrt(void) {
+  error = 0;
   rpn_resolve("sqrt(2)", &result, &error);
   CU_ASSERT_EQ(result, 1.414213562);
 
@@ -165,6 +177,7 @@ void testSqrt(void) {
 }
 
 void testErrors(void) {
+  error = 0;
   rpn_resolve("3/0", &result, &error);
   CU_ASSERT_EQ(error, 1);
 
@@ -172,27 +185,40 @@ void testErrors(void) {
   CU_ASSERT_EQ(error, 1);
 }
 
+void testParseNum(void) {
+  CU_ASSERT_EQ(2, rpn_parsenum("2"));
+  CU_ASSERT_EQ(2, rpn_parsenum("2.0"));
+  CU_ASSERT_EQ(2.5, rpn_parsenum("2.5"));
+  CU_ASSERT_EQ(2.12345, rpn_parsenum("2.12345"));
+  CU_ASSERT_EQ(123, rpn_parsenum("123"));
+  CU_ASSERT_EQ(123.321, rpn_parsenum("123.321"));
+}
+
 int main() {
-  CU_pSuite pSuite = NULL;
+  CU_pSuite resolveSuite = NULL;
+  CU_pSuite helpersSuite = NULL;
   CU_initialize_registry();
 
-  // add a suite
-  pSuite = CU_add_suite("RPN resolve test", NULL, NULL);
+  // add suites
+  resolveSuite = CU_add_suite("RPN resolve test", NULL, NULL);
+  helpersSuite = CU_add_suite("RPN helpers test", NULL, NULL);
 
   // add tests
-  CU_add_test(pSuite, "sanity", testSanity);
-  CU_add_test(pSuite, "singular number", testSingular);
-  CU_add_test(pSuite, "addition", testAddition);
-  CU_add_test(pSuite, "subtraction", testSubtraction);
-  CU_add_test(pSuite, "multiplication", testMultiplication);
-  CU_add_test(pSuite, "division", testDivision);
-  CU_add_test(pSuite, "exponentation", testExponentation);
-  CU_add_test(pSuite, "decimal point", testDecimalPoint);
-  CU_add_test(pSuite, "operator precedence", testPrecedence);
-  CU_add_test(pSuite, "brackets", testBrackets);
-  CU_add_test(pSuite, "square root", testSqrt);
-  //CU_add_test(pSuite, "unary minus", testUnaryMinus);
-  CU_add_test(pSuite, "errors", testErrors);
+  CU_add_test(resolveSuite, "sanity", testSanity);
+  CU_add_test(resolveSuite, "singular number", testSingular);
+  CU_add_test(resolveSuite, "addition", testAddition);
+  CU_add_test(resolveSuite, "subtraction", testSubtraction);
+  CU_add_test(resolveSuite, "multiplication", testMultiplication);
+  CU_add_test(resolveSuite, "division", testDivision);
+  CU_add_test(resolveSuite, "exponentation", testExponentation);
+  CU_add_test(resolveSuite, "decimal point", testDecimalPoint);
+  CU_add_test(resolveSuite, "operator precedence", testPrecedence);
+  CU_add_test(resolveSuite, "brackets", testBrackets);
+  CU_add_test(resolveSuite, "square root", testSqrt);
+  //CU_add_test(resolveSuite, "unary minus", testUnaryMinus);
+  CU_add_test(resolveSuite, "errors", testErrors);
+
+  CU_add_test(helpersSuite, "parsing number", testParseNum);
 
   // run tests
   CU_basic_set_mode(CU_BRM_VERBOSE);

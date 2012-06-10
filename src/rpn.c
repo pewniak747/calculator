@@ -53,7 +53,7 @@ double rpn_parsenum(char *num) {
     if(num[i] == '.') decimal = 10;
     else {
       if(decimal > 0) {
-        result += (num[i]-48)/decimal;
+        result += (double)(num[i]-48)/decimal;
         decimal *= 10; 
       }
       else {
@@ -127,7 +127,7 @@ void rpn_parse(char **input, struct rpn_node *result[], int *result_size, int *e
     (*result_size) ++;
     rpn_pop(&op_stack, false);
   }
-  /* debug
+  /*
   printf("finishing! rpn size: %d\n", *result_size);
   for(i=0; i<*result_size; i++) {
     printf("> %.3f - %d\n", result[i]->value, result[i]->type);
