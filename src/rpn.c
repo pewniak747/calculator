@@ -46,6 +46,11 @@ int rpn_precedence(int op) {
   return op;
 }
 
+bool rpn_left_assoc(int op) {
+  if(op <= 4) return true;
+  else return false;
+}
+
 double rpn_parsenum(char *num) {
   int decimal = 0, i;
   double result = 0;
@@ -102,12 +107,10 @@ void rpn_parse(char **input, struct rpn_node *result[], int *result_size, int *e
     }
     else if(rpn_isop(token[0])) {
       op = rpn_opcode(token[0]);
-      if(!(op_stack == NULL || rpn_precedence(op_stack->type) < rpn_precedence(op))) {
-        while(op_stack != NULL && rpn_precedence(op_stack->type) > rpn_precedence(op)) {
-          result[*result_size] = op_stack;
-          (*result_size) ++;
-          rpn_pop(&op_stack, false);
-        }
+      while(op_stack != NULL && ((rpn_left_assoc(op_stack->type) && rpn_precedence(op_stack->type) >= rpn_precedence(op)) || (!rpn_left_assoc(op_stack->type) && rpn_precedence(op_stack->type) > rpn_precedence(op))) ) {
+        result[*result_size] = op_stack;
+        (*result_size) ++;
+        rpn_pop(&op_stack, false);
       }
       rpn_push(&op_stack, rpn_create(op, 0));
     }

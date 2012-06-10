@@ -26,6 +26,7 @@ bool rpn_isop(char op);
 bool rpn_isnum(char *num);
 double rpn_parsenum(char *num);
 int rpn_precedence(int op);
+bool rpn_left_assoc(int op);
 void rpn_getargs(struct rpn_node ** rpn_stack, int size, double result[]);
 
 void rpn_addition(struct rpn_node ** rpn_stack);

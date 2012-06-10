@@ -80,7 +80,7 @@ void testExponentation(void) {
   rpn_resolve("3^0", &result, &error);
   CU_ASSERT_EQ(result, 1);
 
-  rpn_resolve("2^3^4", &result, &error);
+  rpn_resolve("4^3^2", &result, &error);
   CU_ASSERT_EQ(result, 262144);
 
   rpn_resolve("4^(1/2)", &result, &error);
