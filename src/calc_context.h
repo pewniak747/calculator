@@ -1,7 +1,6 @@
 #ifndef CALC_CONTEXT
 #define CALC_CONTEXT
 
-#include <gtk/gtk.h>
 #include "calclist.h"
 
 typedef struct {

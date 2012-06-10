@@ -1,16 +1,28 @@
-#include <stdlib.h>
-#include <string.h>
 #include <gtk/gtk.h>
+#include "rpn.h"
 #include "callbacks.h"
 #include "calc_context.h"
 #include "calclist.h"
-#include "rpn.h"
 
 int main(int argc, char *argv[]) {
   gtk_init(&argc, &argv);
   GtkBuilder *builder;
   GtkWidget  *window;
   GError     *error = NULL;
+
+  if(argc == 2 && strcmp(argv[1], "--nogui") == 0) {
+    double res;
+    int err;
+    while(true) {
+      printf("> ");
+      char *input = malloc(100*sizeof(char));
+      scanf("%s", input);
+      if(strcmp(input, "exit") == 0) return 0;
+      rpn_resolve(input, &res, &err);
+      if(err == 0) printf("%.6f\n", input, res);
+      else printf("ERROR!\n");
+    }
+  }
 
   builder = gtk_builder_new();
   if(!gtk_builder_add_from_file(builder, "src/calc.glade", &error)) {
@@ -50,7 +62,6 @@ int main(int argc, char *argv[]) {
   g_signal_connect(GTK_WIDGET(get_widget(builder, "button_previous")), "clicked", G_CALLBACK(callback_previous), context);
   g_signal_connect(GTK_WIDGET(get_widget(builder, "button_next")), "clicked", G_CALLBACK(callback_next), context);
 
-  g_signal_connect(GTK_WIDGET(get_widget(builder, "button_equals")), "clicked", G_CALLBACK(callback_control_buttons), context);
   g_signal_connect(GTK_WIDGET(get_widget(builder, "button_next")), "clicked", G_CALLBACK(callback_control_buttons), context);
   g_signal_connect(GTK_WIDGET(get_widget(builder, "button_previous")), "clicked", G_CALLBACK(callback_control_buttons), context);
 

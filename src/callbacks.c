@@ -2,6 +2,7 @@
 #include "calc_context.h"
 #include "calclist.h"
 #include "callbacks.h"
+#include "rpn.h"
 
 GtkWidget * get_widget(GtkBuilder * builder, const char * name) {
   return gtk_builder_get_object(GTK_BUILDER(builder), name);
@@ -17,14 +18,16 @@ void callback_calculate(GtkWidget * widget, gpointer cx) {
   calc_context * context = cx;
   char * input = gtk_entry_get_text(GTK_ENTRY(get_widget(context->builder, "query_edit")));
   if(strlen(input) == 0) return;
-  rpn_resolve(&input, &result, &error);
-  char * output[100];
-  format_double(result, output);
-  g_print("%s\n", output);
-  if(error == 0)
+  rpn_resolve(input, &result, &error);
+  char *output[100];
+  if(error == 0) {
+    format_double(result, output);
+    g_print("SUCCESS! result: %.6f, output: %s\n", result, output);
     calclist_insert(input, result, context->list);
+  }
   else {
-    *output = "ERROR!";
+    g_print("ERROR! code: %d\n", error);
+    strcpy(output, "ERROR!");
   }
   gtk_label_set_text(GTK_LABEL(get_widget(context->builder, "result_label")), output);
 }
