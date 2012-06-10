@@ -170,10 +170,10 @@ void testSqrt(void) {
   CU_ASSERT_EQ(result, 1.414213562);
 
   rpn_resolve("1-sqrt(2)", &result, &error);
-  CU_ASSERT_EQ(result, 0.414213562);
+  CU_ASSERT_EQ(result, -0.414213562);
 
   rpn_resolve("sqrt(2)*sqrt(2)", &result, &error);
-  CU_ASSERT_EQ(result, 0.414213562);
+  CU_ASSERT_EQ(result, 2);
 }
 
 void testErrors(void) {

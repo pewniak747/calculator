@@ -22,6 +22,11 @@ bool rpn_isop(char token) {
   return token == '+' || token == '-' || token == '*' || token == '/' || token == '^';
 }
 
+int rpn_functioncode(char *token) {
+  if(strcmp(token, "sqrt") == 0) return 7;
+  else return 0;
+}
+
 bool rpn_isnum(char *num) {
   bool decimal = false;
   int i;
@@ -102,8 +107,8 @@ void rpn_parse(char **input, struct rpn_node *result[], int *result_size, int *e
       result[*result_size] = rpn_create(0, rpn_parsenum(token));
       (*result_size) ++;
     }
-    else if(false) { // rpn_is_function
-    
+    else if(rpn_functioncode(token) > 0) {
+      rpn_push(&op_stack, rpn_create(rpn_functioncode(token), 0));
     }
     else if(rpn_isop(token[0])) {
       op = rpn_opcode(token[0]);
@@ -123,7 +128,7 @@ void rpn_parse(char **input, struct rpn_node *result[], int *result_size, int *e
         if(op_stack->type == -1) {
           found_parenthesis = true;
           rpn_pop(&op_stack, true);
-          return;
+          break;
         }
         else {
           result[*result_size] = op_stack;
@@ -132,8 +137,12 @@ void rpn_parse(char **input, struct rpn_node *result[], int *result_size, int *e
         }
       }
       if(!found_parenthesis) {
-        printf("PARENTHESIS NOT FOUND!\n");
         *error = 1;
+      }
+      if(op_stack != NULL && op_stack->type >= 7) { // function
+        result[*result_size] = op_stack;
+        (*result_size) ++;
+        rpn_pop(&op_stack, false);
       }
     }
     else {
@@ -191,6 +200,12 @@ void rpn_exponentation(struct rpn_node ** rpn_stack) {
   double args[2];
   rpn_getargs(rpn_stack, 2, args);
   rpn_push(rpn_stack, rpn_create(0, pow(args[0], args[1])));
+}
+
+void rpn_square_root(struct rpn_node ** rpn_stack) {
+  double args[1];
+  rpn_getargs(rpn_stack, 1, args);
+  rpn_push(rpn_stack, rpn_create(0, sqrt(args[0])));
 }
 
 void rpn_tokenize(char *input, char *output[], int *size, int *error) {
@@ -260,13 +275,15 @@ void rpn_resolve(char *input, double *result, int *error) {
 
   if(*error > 0) return;
   struct rpn_node *rpn_stack = 0;
-  double (*functions[6])(struct rpn_node ** rpn_stack) = {
+  double (*functions[8])(struct rpn_node ** rpn_stack) = {
     NULL,
     rpn_addition,
     rpn_substraction,
     rpn_multiplication,
     rpn_division,
-    rpn_exponentation
+    rpn_exponentation,
+    NULL,
+    rpn_square_root
   };
   for(i=0; i<rpn_size; i++) {
     if(rpn_expression[i]->type == 0) {
