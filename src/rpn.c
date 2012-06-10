@@ -114,11 +114,27 @@ void rpn_parse(char **input, struct rpn_node *result[], int *result_size, int *e
       }
       rpn_push(&op_stack, rpn_create(op, 0));
     }
-    else if(token == '(') {
-    
+    else if(strcmp(token, "(") == 0) {
+      rpn_push(&op_stack, rpn_create(-1, 0));
     }
-    else if(token == ')') {
-    
+    else if(strcmp(token, ")") == 0) {
+      bool found_parenthesis = false;
+      while(op_stack != NULL) {
+        if(op_stack->type == -1) {
+          found_parenthesis = true;
+          rpn_pop(&op_stack, true);
+          return;
+        }
+        else {
+          result[*result_size] = op_stack;
+          (*result_size) ++;
+          rpn_pop(&op_stack, false);
+        }
+      }
+      if(!found_parenthesis) {
+        printf("PARENTHESIS NOT FOUND!\n");
+        *error = 1;
+      }
     }
     else {
       *error = 1;
