@@ -232,10 +232,27 @@ void testExponential(void) {
 
 void testErrors(void) {
   rpn_resolve("3/0", &result, &error);
-  CU_ASSERT_EQ(error, 1);
+  CU_ASSERT_NOT_EQUAL(error, 0);
 
-  rpn_resolve("2/3/0", &result, &error);
-  CU_ASSERT_EQ(error, 1);
+  rpn_resolve("(2/3)/0", &result, &error);
+  CU_ASSERT_NOT_EQUAL(error, 0);
+
+  rpn_resolve("sqrt(-1)", &result, &error);
+  CU_ASSERT_NOT_EQUAL(error, 0);
+}
+
+void testGibberish(void){
+  rpn_resolve("124.12412.41241.", &result, &error);
+  CU_ASSERT_NOT_EQUAL(error, 0);
+
+  rpn_resolve("(1241254-/3)", &result, &error);
+  CU_ASSERT_NOT_EQUAL(error, 0);
+
+  rpn_resolve("dskla21ru*", &result, &error);
+  CU_ASSERT_NOT_EQUAL(error, 0);
+
+  rpn_resolve("+asf", &result, &error);
+  CU_ASSERT_NOT_EQUAL(error, 0);
 }
 
 void testParseNum(void) {
@@ -276,6 +293,7 @@ int main() {
   CU_add_test(resolveSuite, "exponential function", testExponential);
   CU_add_test(resolveSuite, "unary minus", testUnaryMinus);
   CU_add_test(resolveSuite, "errors", testErrors);
+  //CU_add_test(resolveSuite, "gibberish", testGibberish);
 
   CU_add_test(helpersSuite, "parsing number", testParseNum);
 

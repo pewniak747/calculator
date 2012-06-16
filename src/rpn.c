@@ -209,10 +209,13 @@ void rpn_multiplication(struct rpn_node ** rpn_stack) {
   rpn_push(rpn_stack, rpn_create(0, args[0]*args[1]));
 }
 
-void rpn_division(struct rpn_node ** rpn_stack) {
+void rpn_division(struct rpn_node ** rpn_stack, int *error) {
   double args[2];
   rpn_getargs(rpn_stack, 2, args);
-  rpn_push(rpn_stack, rpn_create(0, args[0]/args[1]));
+  if(args[1] != 0)
+    rpn_push(rpn_stack, rpn_create(0, args[0]/args[1]));
+  else
+    *error = 1;
 }
 
 void rpn_exponentation(struct rpn_node ** rpn_stack) {
@@ -227,10 +230,13 @@ void rpn_negation(struct rpn_node ** rpn_stack) {
   rpn_push(rpn_stack, rpn_create(0, -args[0]));
 }
 
-void rpn_square_root(struct rpn_node ** rpn_stack) {
+void rpn_square_root(struct rpn_node ** rpn_stack, int *error) {
   double args[1];
   rpn_getargs(rpn_stack, 1, args);
-  rpn_push(rpn_stack, rpn_create(0, sqrt(args[0])));
+  if(args[0] >= 0)
+    rpn_push(rpn_stack, rpn_create(0, sqrt(args[0])));
+  else
+    *error = 1;
 }
 
 void rpn_sine(struct rpn_node ** rpn_stack) {
@@ -343,7 +349,7 @@ void rpn_resolve(char *input, double *result, int *error) {
 
   if(*error > 0) return;
   struct rpn_node *rpn_stack = 0;
-  double (*functions[12])(struct rpn_node ** rpn_stack) = {
+  double (*functions[12])(struct rpn_node ** rpn_stack, int *error) = {
     NULL,
     rpn_addition,
     rpn_substraction,
@@ -362,11 +368,19 @@ void rpn_resolve(char *input, double *result, int *error) {
       rpn_push(&rpn_stack, rpn_expression[i]);
     }
     else {
-      functions[rpn_expression[i]->type](&rpn_stack);
+      functions[rpn_expression[i]->type](&rpn_stack, error);
       free(rpn_expression[i]);
     }
+    if(*error > 0) break;
   }
-  *result = rpn_stack->value;
-  while(rpn_stack != NULL) rpn_pop(&rpn_stack, true);
+  if(rpn_stack != NULL) {
+    *result = rpn_stack->value;
+    rpn_pop(&rpn_stack, true);
+  }
+  while(rpn_stack != NULL) {
+    *error = 1; 
+    rpn_pop(&rpn_stack, true);
+  }
+  for(i=i+1; i<rpn_size; i++) free(rpn_expression[i]);
 }
 
