@@ -16,13 +16,11 @@ void testSanity(void) {
 }
 
 void testSingular(void) {
-  error = 0;
   rpn_resolve("2", &result, &error);
   CU_ASSERT_EQ(result, 2);
 }
 
 void testAddition(void) {
-  error = 0;
   rpn_resolve("2+2", &result, &error);
   CU_ASSERT_EQ(result, 4);
 
@@ -31,7 +29,6 @@ void testAddition(void) {
 }
 
 void testSubtraction(void) {
-  error = 0;
   rpn_resolve("10-2", &result, &error);
   CU_ASSERT_EQ(result, 8);
 
@@ -40,7 +37,6 @@ void testSubtraction(void) {
 }
 
 void testMultiplication(void) {
-  error = 0;
   rpn_resolve("1*2", &result, &error);
   CU_ASSERT_EQ(result, 2);
 
@@ -55,7 +51,6 @@ void testMultiplication(void) {
 }
 
 void testDivision(void) {
-  error = 0;
   rpn_resolve("1/2", &result, &error);
   CU_ASSERT_EQ(result, 1.0/2);
 
@@ -70,7 +65,6 @@ void testDivision(void) {
 }
 
 void testExponentation(void) {
-  error = 0;
   rpn_resolve("1^2", &result, &error);
   CU_ASSERT_EQ(result, 1);
 
@@ -87,7 +81,6 @@ void testExponentation(void) {
   CU_ASSERT_EQ(result, 2);
 }
 void testDecimalPoint(void) {
-  error = 0;
   rpn_resolve("2.0", &result, &error);
   CU_ASSERT_EQ(result, 2);
 
@@ -111,7 +104,6 @@ void testDecimalPoint(void) {
 }
 
 void testPrecedence(void) {
-  error = 0;
   rpn_resolve("2+3*4", &result, &error);
   CU_ASSERT_EQ(result, 14);
 
@@ -129,7 +121,6 @@ void testPrecedence(void) {
 }
 
 void testBrackets(void) {
-  error = 0;
   rpn_resolve("(2)", &result, &error);
   CU_ASSERT_EQ(result, 2);
 
@@ -165,7 +156,6 @@ void testUnaryMinus(void) {
 }
 
 void testSqrt(void) {
-  error = 0;
   rpn_resolve("sqrt(2)", &result, &error);
   CU_ASSERT_EQ(result, 1.414213562);
 
@@ -176,8 +166,72 @@ void testSqrt(void) {
   CU_ASSERT_EQ(result, 2);
 }
 
+void testSine(void) {
+  rpn_resolve("sin(0)", &result, &error);
+  CU_ASSERT_EQ(result, 1);
+
+  rpn_resolve("sin(30)", &result, &error);
+  CU_ASSERT_EQ(result, 1/2);
+
+  rpn_resolve("sin(45)", &result, &error);
+  CU_ASSERT_EQ(result, 0.70710678);
+
+  rpn_resolve("sin(60)", &result, &error);
+  CU_ASSERT_EQ(result, 0.8660254);
+
+  rpn_resolve("sin(90)", &result, &error);
+  CU_ASSERT_EQ(result, 0);
+}
+
+void testCosine(void) {
+  rpn_resolve("cos(0)", &result, &error);
+  CU_ASSERT_EQ(result, 1);
+
+  rpn_resolve("cos(30)", &result, &error);
+  CU_ASSERT_EQ(result, 0.8660254);
+
+
+  rpn_resolve("cos(45)", &result, &error);
+  CU_ASSERT_EQ(result, 0.70710678);
+
+  rpn_resolve("cos(60)", &result, &error);
+  CU_ASSERT_EQ(result, 1/2);
+
+  rpn_resolve("cos(90)", &result, &error);
+  CU_ASSERT_EQ(result, 0);
+}
+
+void testTangens(void) {
+  rpn_resolve("tan(0)", &result, &error);
+  CU_ASSERT_EQ(result, 0);
+
+  rpn_resolve("tan(30)", &result, &error);
+  CU_ASSERT_EQ(result, 0.5773502);
+
+
+  rpn_resolve("tan(45)", &result, &error);
+  CU_ASSERT_EQ(result, 1);
+
+  rpn_resolve("tan(60)", &result, &error);
+  CU_ASSERT_EQ(result, 1.732050);
+}
+
+void testExp(void) {
+  rpn_resolve("exp(0)", &result, &error);
+  CU_ASSERT_EQ(result, 0);
+
+  rpn_resolve("exp(1)", &result, &error);
+  CU_ASSERT_EQ(result, 2.7182818);
+
+
+  rpn_resolve("exp(2)", &result, &error);
+  CU_ASSERT_EQ(result, 7.389056);
+
+  rpn_resolve("exp(-1)", &result, &error);
+  CU_ASSERT_EQ(result, 0.3678794);
+}
+
 void testErrors(void) {
-  error = 0;
   rpn_resolve("3/0", &result, &error);
   CU_ASSERT_EQ(error, 1);
 
@@ -215,6 +269,10 @@ int main() {
   CU_add_test(resolveSuite, "operator precedence", testPrecedence);
   CU_add_test(resolveSuite, "brackets", testBrackets);
   CU_add_test(resolveSuite, "square root", testSqrt);
+  CU_add_test(resolveSuite, "sine", testSine);
+  CU_add_test(resolveSuite, "cosine", testCosine);
+  CU_add_test(resolveSuite, "tangens", testTangens);
+  CU_add_test(resolveSuite, "exp", testExp);
   //CU_add_test(resolveSuite, "unary minus", testUnaryMinus);
   CU_add_test(resolveSuite, "errors", testErrors);
 
