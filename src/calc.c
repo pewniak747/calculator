@@ -31,12 +31,14 @@ int main(int argc, char *argv[]) {
       return(1);
   }
   calclist * list = NULL;
+  calclist_fread(&list, "calculations.txt");
+
   calc_context * context = calc_context_new(builder, &list);
   window = GTK_WIDGET( gtk_builder_get_object( builder, "window1" ) );
 
   // connect signals
-  g_signal_connect(window, "destroy", G_CALLBACK(callback_quit), NULL);
-  g_signal_connect(GTK_WIDGET(get_widget(builder, "button_quit")), "clicked", G_CALLBACK(callback_quit), NULL);
+  g_signal_connect(window, "destroy", G_CALLBACK(callback_quit), context);
+  g_signal_connect(GTK_WIDGET(get_widget(builder, "button_quit")), "clicked", G_CALLBACK(callback_quit), context);
   g_signal_connect(GTK_WIDGET(get_widget(builder, "button_equals")), "clicked", G_CALLBACK(callback_calculate), context);
 
   // number buttons
@@ -67,7 +69,11 @@ int main(int argc, char *argv[]) {
 
   gtk_widget_show(window);
 
+  if(list != NULL) {
+    callback_control_buttons(NULL, context);
+    callback_next(NULL, context);
+  }
+
   gtk_main();
-  calc_context_free(context);
   return 0;
 }

@@ -8,7 +8,10 @@ GtkWidget * get_widget(GtkBuilder * builder, const char * name) {
   return gtk_builder_get_object(GTK_BUILDER(builder), name);
 }
 
-void callback_quit(GtkWidget * widget, gpointer data) {
+void callback_quit(GtkWidget * widget, gpointer cx) {
+  calc_context * context = cx;
+  calclist_fwrite(context->list, "calculations.txt");
+  calc_context_free(context);
   gtk_main_quit();
 }
 

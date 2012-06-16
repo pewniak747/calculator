@@ -1,5 +1,6 @@
 #ifndef CALCLIST
 #define CALCLIST
+#include <stdbool.h>
 #include <gtk/gtk.h>
 
 typedef struct {
@@ -12,8 +13,8 @@ typedef struct {
 calclist * calclist_new(char * input, double output);
 void calclist_insert(char * input, double output, calclist ** list);
 void calclist_rewind(calclist ** list);
-void calclist_prev(calclist ** list);
-void calclist_next(calclist ** list);
+bool calclist_prev(calclist ** list);
+bool calclist_next(calclist ** list);
 void calclist_free(calclist ** list);
 
 void format_double(double result, char * output);
