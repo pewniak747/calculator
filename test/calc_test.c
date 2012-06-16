@@ -135,7 +135,6 @@ void testBrackets(void) {
 }
 
 void testUnaryMinus(void) {
-  error = 0;
   rpn_resolve("-8", &result, &error);
   CU_ASSERT_EQ(result, -8);
 
@@ -143,7 +142,7 @@ void testUnaryMinus(void) {
   CU_ASSERT_EQ(result, -8);
 
   rpn_resolve("-2+3", &result, &error);
-  CU_ASSERT_EQ(result, -1);
+  CU_ASSERT_EQ(result, 1);
 
   rpn_resolve("7*-2", &result, &error);
   CU_ASSERT_EQ(result, -14);
@@ -152,7 +151,7 @@ void testUnaryMinus(void) {
   CU_ASSERT_EQ(result, -4);
 
   rpn_resolve("-(2+2*3)-1", &result, &error);
-  CU_ASSERT_EQ(result, -13);
+  CU_ASSERT_EQ(result, -9);
 }
 
 void testSqrt(void) {
@@ -227,8 +226,8 @@ void testExponential(void) {
   rpn_resolve("exp(2)", &result, &error);
   CU_ASSERT_EQ(result, 7.389056);
 
-  //rpn_resolve("exp(-1)", &result, &error);
-  //CU_ASSERT_EQ(result, 0.3678794);
+  rpn_resolve("exp(-1)", &result, &error);
+  CU_ASSERT_EQ(result, 0.3678794);
 }
 
 void testErrors(void) {
@@ -246,6 +245,8 @@ void testParseNum(void) {
   CU_ASSERT_EQ(2.12345, rpn_parsenum("2.12345"));
   CU_ASSERT_EQ(123, rpn_parsenum("123"));
   CU_ASSERT_EQ(123.321, rpn_parsenum("123.321"));
+  CU_ASSERT_EQ(-1, rpn_parsenum("-1"));
+  CU_ASSERT_EQ(-0.5, rpn_parsenum("-0.5"));
 }
 
 int main() {
@@ -273,7 +274,7 @@ int main() {
   CU_add_test(resolveSuite, "cosine", testCosine);
   CU_add_test(resolveSuite, "tangens", testTangens);
   CU_add_test(resolveSuite, "exponential function", testExponential);
-  //CU_add_test(resolveSuite, "unary minus", testUnaryMinus);
+  CU_add_test(resolveSuite, "unary minus", testUnaryMinus);
   CU_add_test(resolveSuite, "errors", testErrors);
 
   CU_add_test(helpersSuite, "parsing number", testParseNum);

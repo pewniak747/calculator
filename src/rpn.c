@@ -13,6 +13,7 @@ int rpn_opcode(char op) {
     case '*': result = 3; break;
     case '/': result = 4; break;
     case '^': result = 5; break;
+    case '_': result = 6; break;
     default: result = 0; break;
   }
   return result;
@@ -23,6 +24,7 @@ bool rpn_isop(char token) {
 }
 
 int rpn_functioncode(char *token) {
+  if(strcmp(token, "_") == 0) return 6;
   if(strcmp(token, "sqrt") == 0) return 7;
   if(strcmp(token, "sin") == 0) return 8;
   if(strcmp(token, "cos") == 0) return 9;
@@ -33,8 +35,9 @@ int rpn_functioncode(char *token) {
 
 bool rpn_isnum(char *num) {
   bool decimal = false;
-  int i;
-  for(i=0; i<strlen(num); i++) {
+  int i=0;
+  if(strlen(num) > 1 && num[0]=='-') i=1;
+  for(i; i<strlen(num); i++) {
     if(num[i] == '.') {
       if(decimal) return false;
       else decimal = true;
@@ -42,6 +45,10 @@ bool rpn_isnum(char *num) {
     else if(num[i]-48 < 0 || num[i]-48 > 9) return false;
   }
   return true;
+}
+
+bool rpn_isnumchar(char num) {
+  return num-48 >= 0 && num-48 <=9;
 }
 
 int rpn_precedence(int op) {
@@ -61,9 +68,14 @@ bool rpn_left_assoc(int op) {
 }
 
 double rpn_parsenum(char *num) {
-  int decimal = 0, i;
+  int decimal = 0, i=0;
   double result = 0;
-  for(i=0; i<strlen(num); i++) {
+  bool negative=false;
+  if(num[0] == '-') {
+    negative = true;
+    i++;
+  }
+  for(i; i<strlen(num); i++) {
     if(num[i] == '.') decimal = 10;
     else {
       if(decimal > 0) {
@@ -76,7 +88,10 @@ double rpn_parsenum(char *num) {
       }
     }
   }
-  return result;
+  if(negative)
+    return -result;
+  else
+    return result;
 }
 
 void rpn_push(struct rpn_node ** rpn_stack, struct rpn_node * new_node) {
@@ -206,6 +221,12 @@ void rpn_exponentation(struct rpn_node ** rpn_stack) {
   rpn_push(rpn_stack, rpn_create(0, pow(args[0], args[1])));
 }
 
+void rpn_negation(struct rpn_node ** rpn_stack) {
+  double args[1];
+  rpn_getargs(rpn_stack, 1, args);
+  rpn_push(rpn_stack, rpn_create(0, -args[0]));
+}
+
 void rpn_square_root(struct rpn_node ** rpn_stack) {
   double args[1];
   rpn_getargs(rpn_stack, 1, args);
@@ -240,16 +261,21 @@ void rpn_tokenize(char *cinput, char *output[], int *size, int *error) {
   char *buffer = malloc(100*sizeof(char));
   char *nbuffer = malloc(100*sizeof(char));
   char *input = malloc(100*sizeof(char));
+  int i;
   strcpy(buffer, "");
   strcpy(nbuffer, "");
   strcpy(input, cinput);
+
+  for(i=0; i<strlen(input)-1; i++) {
+    if(input[i]=='-' && input[i+1] == '(') input[i] = '_';
+  }
+
   char current;
-  int i;
   *size = 0;
   for(i=0; i<strlen(input); i++) {
     current = input[i];
     if(current == ' ') continue;
-    else if((current-48 >= 0 && current-48 <=9) || current == 46) {
+    else if((rpn_isnumchar(current) || current == 46 || (current == 45 && i<sizeof(cinput)-1 && rpn_isnumchar(input[i+1]) && (i==0 || input[i-1] == '(' || rpn_isop(input[i-1]))))) {
       if(strlen(buffer) > 0) {
         output[*size] = malloc(30*sizeof(char));
         strcpy(output[*size], buffer);
@@ -290,6 +316,14 @@ void rpn_tokenize(char *cinput, char *output[], int *size, int *error) {
   free(nbuffer);
   free(buffer);
   free(input);
+
+  /*
+  printf("tokens: ");
+  for(i=0; i<*size; i++) {
+    printf("%s ", output[i]);
+  }
+  printf("\n");
+  */
 }
 
 void rpn_resolve(char *input, double *result, int *error) {
@@ -316,7 +350,7 @@ void rpn_resolve(char *input, double *result, int *error) {
     rpn_multiplication,
     rpn_division,
     rpn_exponentation,
-    NULL,
+    rpn_negation,
     rpn_square_root,
     rpn_sine,
     rpn_cosine,

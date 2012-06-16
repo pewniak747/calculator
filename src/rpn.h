@@ -34,6 +34,7 @@ void rpn_substraction(struct rpn_node ** rpn_stack);
 void rpn_multiplication(struct rpn_node ** rpn_stack);
 void rpn_division(struct rpn_node ** rpn_stack);
 void rpn_exponentation(struct rpn_node ** rpn_stack);
+void rpn_negation(struct rpn_node ** rpn_stack);
 void rpn_square_root(struct rpn_node ** rpn_stack);
 void rpn_sine(struct rpn_node ** rpn_stack);
 void rpn_cosine(struct rpn_node ** rpn_stack);
