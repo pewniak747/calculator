@@ -72,7 +72,7 @@ void calclist_parseline(char ** input, double *result) {
 
 void calclist_fwrite(calclist ** ilist, char *filename) {
   FILE *file = fopen(filename, "w");
-  if(ilist == NULL || file == NULL) return;
+  if(*ilist == NULL || file == NULL) return;
   calclist * list = *(ilist);
   calclist_rewind(&list);
   do {
