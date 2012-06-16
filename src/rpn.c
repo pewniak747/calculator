@@ -24,6 +24,10 @@ bool rpn_isop(char token) {
 
 int rpn_functioncode(char *token) {
   if(strcmp(token, "sqrt") == 0) return 7;
+  if(strcmp(token, "sin") == 0) return 8;
+  if(strcmp(token, "cos") == 0) return 9;
+  if(strcmp(token, "tan") == 0) return 10;
+  if(strcmp(token, "exp") == 0) return 11;
   else return 0;
 }
 
@@ -208,6 +212,30 @@ void rpn_square_root(struct rpn_node ** rpn_stack) {
   rpn_push(rpn_stack, rpn_create(0, sqrt(args[0])));
 }
 
+void rpn_sine(struct rpn_node ** rpn_stack) {
+  double args[1];
+  rpn_getargs(rpn_stack, 1, args);
+  rpn_push(rpn_stack, rpn_create(0, sin(args[0]/180*M_PI)));
+}
+
+void rpn_cosine(struct rpn_node ** rpn_stack) {
+  double args[1];
+  rpn_getargs(rpn_stack, 1, args);
+  rpn_push(rpn_stack, rpn_create(0, cos(args[0]/180*M_PI)));
+}
+
+void rpn_tangens(struct rpn_node ** rpn_stack) {
+  double args[1];
+  rpn_getargs(rpn_stack, 1, args);
+  rpn_push(rpn_stack, rpn_create(0, tan(args[0]/180*M_PI)));
+}
+
+void rpn_exponential(struct rpn_node ** rpn_stack) {
+  double args[1];
+  rpn_getargs(rpn_stack, 1, args);
+  rpn_push(rpn_stack, rpn_create(0, exp(args[0])));
+}
+
 void rpn_tokenize(char *cinput, char *output[], int *size, int *error) {
   char *buffer = malloc(100*sizeof(char));
   char *nbuffer = malloc(100*sizeof(char));
@@ -281,7 +309,7 @@ void rpn_resolve(char *input, double *result, int *error) {
 
   if(*error > 0) return;
   struct rpn_node *rpn_stack = 0;
-  double (*functions[8])(struct rpn_node ** rpn_stack) = {
+  double (*functions[12])(struct rpn_node ** rpn_stack) = {
     NULL,
     rpn_addition,
     rpn_substraction,
@@ -289,7 +317,11 @@ void rpn_resolve(char *input, double *result, int *error) {
     rpn_division,
     rpn_exponentation,
     NULL,
-    rpn_square_root
+    rpn_square_root,
+    rpn_sine,
+    rpn_cosine,
+    rpn_tangens,
+    rpn_exponential
   };
   for(i=0; i<rpn_size; i++) {
     if(rpn_expression[i]->type == 0) {

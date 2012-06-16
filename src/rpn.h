@@ -33,6 +33,12 @@ void rpn_addition(struct rpn_node ** rpn_stack);
 void rpn_substraction(struct rpn_node ** rpn_stack);
 void rpn_multiplication(struct rpn_node ** rpn_stack);
 void rpn_division(struct rpn_node ** rpn_stack);
+void rpn_exponentation(struct rpn_node ** rpn_stack);
+void rpn_square_root(struct rpn_node ** rpn_stack);
+void rpn_sine(struct rpn_node ** rpn_stack);
+void rpn_cosine(struct rpn_node ** rpn_stack);
+void rpn_tangens(struct rpn_node ** rpn_stack);
+void rpn_exponential(struct rpn_node ** rpn_stack);
 
 void rpn_tokenize(char *input, char **output, int * size, int * error);
 void rpn_parse(char **input, struct rpn_node * result[], int * result_size, int * error);
