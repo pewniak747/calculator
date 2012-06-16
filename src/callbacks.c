@@ -24,6 +24,7 @@ void callback_calculate(GtkWidget * widget, gpointer cx) {
     format_double(result, output);
     g_print("SUCCESS! result: %.6f, output: %s\n", result, output);
     calclist_insert(input, result, context->list);
+    callback_control_buttons(widget, cx);
   }
   else {
     g_print("ERROR! code: %d\n", error);
