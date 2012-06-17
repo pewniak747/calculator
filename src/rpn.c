@@ -273,7 +273,7 @@ void rpn_tokenize(char *cinput, char *output[], int *size, int *error) {
   strcpy(input, cinput);
 
   for(i=0; i<strlen(input)-1; i++) {
-    if(input[i]=='-' && input[i+1] == '(') input[i] = '_';
+    if(input[i]=='-' && input[i+1] == '(' && (i==0 || rpn_isnumchar(input[i-1]))) input[i] = '_';
   }
 
   char current;

@@ -127,6 +127,9 @@ void testBrackets(void) {
   rpn_resolve("(2+3)*4", &result, &error);
   CU_ASSERT_EQ(result, 20);
 
+  rpn_resolve("(2+3)-(3*3)", &result, &error);
+  CU_ASSERT_EQ(result, -4);
+
   rpn_resolve("(2+3)*(4-1)", &result, &error);
   CU_ASSERT_EQ(result, 15);
 
