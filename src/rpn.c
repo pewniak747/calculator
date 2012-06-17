@@ -382,5 +382,6 @@ void rpn_resolve(char *input, double *result, int *error) {
     rpn_pop(&rpn_stack, true);
   }
   for(i=i+1; i<rpn_size; i++) free(rpn_expression[i]);
+  for(i=0; i<rpn_size; i++) free(tokenized_input[i]);
 }
 
