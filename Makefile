@@ -27,7 +27,7 @@ $(TARGET): $(OBJS)
 	$(CC) -c $(CFLAGS) $< -o obj/$@ $(TESTFLAGS)
 
 clean:
-	rm obj/* $(TARGET) $(TEST_TARGET)
+	rm -f obj/* $(TARGET) $(TEST_TARGET)
 
 test: $(TEST_OBJS)
 	$(LD) $(MTEST_OBJS) -o $(TEST_TARGET) -lcunit $(LDFLAGS) 
