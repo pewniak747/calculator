@@ -183,83 +183,89 @@ void rpn_parse(char **input, struct rpn_node *result[], int *result_size, int *e
   */
 }
 
-void rpn_getargs(struct rpn_node ** rpn_stack, int size, double result[]) {
+void rpn_getargs(struct rpn_node ** rpn_stack, int size, double result[], int *error) {
   while(size>0) {
+    if(*rpn_stack != NULL) {
     result[size-1] = (*rpn_stack)->value;
     rpn_pop(rpn_stack, true);
     size--;
+    }
+    else {
+      *error = 1;
+      return;
+    }
   }
 }
 
-void rpn_addition(struct rpn_node ** rpn_stack) {
+void rpn_addition(struct rpn_node ** rpn_stack, int *error) {
   double args[2];
-  rpn_getargs(rpn_stack, 2, args);
+  rpn_getargs(rpn_stack, 2, args, error);
   rpn_push(rpn_stack, rpn_create(0, args[0]+args[1]));
 }
 
-void rpn_substraction(struct rpn_node ** rpn_stack) {
+void rpn_substraction(struct rpn_node ** rpn_stack, int *error) {
   double args[2];
-  rpn_getargs(rpn_stack, 2, args);
+  rpn_getargs(rpn_stack, 2, args, error);
   rpn_push(rpn_stack, rpn_create(0, args[0]-args[1]));
 }
 
-void rpn_multiplication(struct rpn_node ** rpn_stack) {
+void rpn_multiplication(struct rpn_node ** rpn_stack, int *error) {
   double args[2];
-  rpn_getargs(rpn_stack, 2, args);
+  rpn_getargs(rpn_stack, 2, args, error);
   rpn_push(rpn_stack, rpn_create(0, args[0]*args[1]));
 }
 
 void rpn_division(struct rpn_node ** rpn_stack, int *error) {
   double args[2];
-  rpn_getargs(rpn_stack, 2, args);
+  rpn_getargs(rpn_stack, 2, args, error);
   if(args[1] != 0)
     rpn_push(rpn_stack, rpn_create(0, args[0]/args[1]));
   else
     *error = 1;
 }
 
-void rpn_exponentation(struct rpn_node ** rpn_stack) {
+void rpn_exponentation(struct rpn_node ** rpn_stack, int *error) {
   double args[2];
-  rpn_getargs(rpn_stack, 2, args);
+  rpn_getargs(rpn_stack, 2, args, error);
   rpn_push(rpn_stack, rpn_create(0, pow(args[0], args[1])));
 }
 
-void rpn_negation(struct rpn_node ** rpn_stack) {
+void rpn_negation(struct rpn_node ** rpn_stack, int *error) {
   double args[1];
-  rpn_getargs(rpn_stack, 1, args);
+  rpn_getargs(rpn_stack, 1, args, error);
   rpn_push(rpn_stack, rpn_create(0, -args[0]));
 }
 
 void rpn_square_root(struct rpn_node ** rpn_stack, int *error) {
   double args[1];
-  rpn_getargs(rpn_stack, 1, args);
+  rpn_getargs(rpn_stack, 1, args, error);
   if(args[0] >= 0)
     rpn_push(rpn_stack, rpn_create(0, sqrt(args[0])));
   else
     *error = 1;
 }
 
-void rpn_sine(struct rpn_node ** rpn_stack) {
+void rpn_sine(struct rpn_node ** rpn_stack, int *error) {
   double args[1];
-  rpn_getargs(rpn_stack, 1, args);
+  rpn_getargs(rpn_stack, 1, args, error);
   rpn_push(rpn_stack, rpn_create(0, sin(args[0]/180*M_PI)));
 }
 
-void rpn_cosine(struct rpn_node ** rpn_stack) {
+void rpn_cosine(struct rpn_node ** rpn_stack, int *error) {
   double args[1];
-  rpn_getargs(rpn_stack, 1, args);
+  rpn_getargs(rpn_stack, 1, args, error);
   rpn_push(rpn_stack, rpn_create(0, cos(args[0]/180*M_PI)));
 }
 
-void rpn_tangens(struct rpn_node ** rpn_stack) {
+void rpn_tangens(struct rpn_node ** rpn_stack, int *error) {
   double args[1];
-  rpn_getargs(rpn_stack, 1, args);
+  rpn_getargs(rpn_stack, 1, args, error);
   rpn_push(rpn_stack, rpn_create(0, tan(args[0]/180*M_PI)));
 }
 
-void rpn_exponential(struct rpn_node ** rpn_stack) {
+void rpn_exponential(struct rpn_node ** rpn_stack, int *error) {
   double args[1];
-  rpn_getargs(rpn_stack, 1, args);
+  rpn_getargs(rpn_stack, 1, args, error);
   rpn_push(rpn_stack, rpn_create(0, exp(args[0])));
 }
 

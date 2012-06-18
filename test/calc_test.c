@@ -256,6 +256,12 @@ void testGibberish(void){
 
   rpn_resolve("+asf", &result, &error);
   CU_ASSERT_NOT_EQUAL(error, 0);
+
+  rpn_resolve("+/*()# ^3", &result, &error);
+  CU_ASSERT_NOT_EQUAL(error, 0);
+
+  rpn_resolve(")xx(", &result, &error);
+  CU_ASSERT_NOT_EQUAL(error, 0);
 }
 
 void testParseNum(void) {
@@ -296,7 +302,7 @@ int main() {
   CU_add_test(resolveSuite, "exponential function", testExponential);
   CU_add_test(resolveSuite, "unary minus", testUnaryMinus);
   CU_add_test(resolveSuite, "errors", testErrors);
-  //CU_add_test(resolveSuite, "gibberish", testGibberish);
+  CU_add_test(resolveSuite, "gibberish", testGibberish);
 
   CU_add_test(helpersSuite, "parsing number", testParseNum);
 
