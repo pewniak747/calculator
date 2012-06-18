@@ -53,6 +53,13 @@ int main(int argc, char *argv[]) {
   g_signal_connect(GTK_WIDGET(get_widget(builder, "number_8")), "clicked", G_CALLBACK(callback_insert), builder);
   g_signal_connect(GTK_WIDGET(get_widget(builder, "number_9")), "clicked", G_CALLBACK(callback_insert), builder);
 
+  // function buttons
+  g_signal_connect(GTK_WIDGET(get_widget(builder, "button_sine")), "clicked", G_CALLBACK(callback_insert_function), builder);
+  g_signal_connect(GTK_WIDGET(get_widget(builder, "button_cosine")), "clicked", G_CALLBACK(callback_insert_function), builder);
+  g_signal_connect(GTK_WIDGET(get_widget(builder, "button_tangens")), "clicked", G_CALLBACK(callback_insert_function), builder);
+  g_signal_connect(GTK_WIDGET(get_widget(builder, "button_sqrt")), "clicked", G_CALLBACK(callback_insert_function), builder);
+  g_signal_connect(GTK_WIDGET(get_widget(builder, "button_exp")), "clicked", G_CALLBACK(callback_insert_function), builder);
+
   // equation buttons
   g_signal_connect(GTK_WIDGET(get_widget(builder, "button_add")), "clicked", G_CALLBACK(callback_insert), builder);
   g_signal_connect(GTK_WIDGET(get_widget(builder, "button_subtract")), "clicked", G_CALLBACK(callback_insert), builder);

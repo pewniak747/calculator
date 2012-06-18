@@ -6,6 +6,7 @@ GtkWidget * get_widget(GtkBuilder * builder, const char * name);
 void callback_quit(GtkWidget * widget, gpointer data);
 void callback_calculate(GtkWidget * widget, gpointer context);
 void callback_insert(GtkWidget * widget, gpointer builder);
+void callback_insert_function(GtkWidget * widget, gpointer builder);
 void callback_previous(GtkWidget * widget, gpointer context);
 void callback_next(GtkWidget * widget, gpointer context);
 void callback_control_buttons(GtkWidget * widget, gpointer context);

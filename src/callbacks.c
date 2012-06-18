@@ -44,6 +44,15 @@ void callback_insert(GtkWidget * widget, gpointer builder) {
   gtk_entry_set_text(GTK_ENTRY(get_widget(builder, "query_edit")), output);
 }
 
+void callback_insert_function(GtkWidget * widget, gpointer builder) {
+  char * input = gtk_entry_get_text(GTK_ENTRY(get_widget(builder, "query_edit")));
+  char * output[100];
+  strcpy(output, input);
+  strcat(output, gtk_button_get_label(widget));
+  strcat(output, "(");
+  gtk_entry_set_text(GTK_ENTRY(get_widget(builder, "query_edit")), output);
+}
+
 void callback_previous(GtkWidget * widget, gpointer cx) {
   calc_context * context = cx;
   calclist ** list = context->list;
