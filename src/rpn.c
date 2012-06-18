@@ -1,3 +1,8 @@
+/*
+ * functions for evaluating expressions using
+ * Reverse Polish Notation and Shunting-Yard algorithm
+ */
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -5,6 +10,9 @@
 #include <math.h>
 #include "rpn.h"
 
+/*
+ * returns operator code for char, or 0 if not operator
+ */
 int rpn_opcode(char op) {
   int result;
   switch(op) {
@@ -19,10 +27,17 @@ int rpn_opcode(char op) {
   return result;
 }
 
+/*
+ * check if char is an operator
+ */
 bool rpn_isop(char token) {
   return token == '+' || token == '-' || token == '*' || token == '/' || token == '^';
 }
 
+/*
+ * returns operator code for function, or 0 if string
+ * is not a function
+ */
 int rpn_functioncode(char *token) {
   if(strcmp(token, "_") == 0) return 6;
   if(strcmp(token, "sqrt") == 0) return 7;
@@ -33,6 +48,9 @@ int rpn_functioncode(char *token) {
   else return 0;
 }
 
+/*
+ * checks if string represents a number
+ */
 bool rpn_isnum(char *num) {
   bool decimal = false;
   int i=0;
@@ -47,10 +65,17 @@ bool rpn_isnum(char *num) {
   return true;
 }
 
+/*
+ * checks if char represents a digit
+ */
 bool rpn_isnumchar(char num) {
   return num-48 >= 0 && num-48 <=9;
 }
 
+/*
+ * returns precenende for operator code
+ * higher number means higher precendence
+ */
 int rpn_precedence(int op) {
   switch(op) {
     case 1: op = 1; break;
@@ -62,11 +87,17 @@ int rpn_precedence(int op) {
   return op;
 }
 
+/*
+ * checks if operator code is left-accosiative
+ */
 bool rpn_left_assoc(int op) {
   if(op <= 4) return true;
   else return false;
 }
 
+/*
+ * parses a string to number
+ */
 double rpn_parsenum(char *num) {
   int decimal = 0, i=0;
   double result = 0;
@@ -94,11 +125,19 @@ double rpn_parsenum(char *num) {
     return result;
 }
 
+/*
+ * pushes a new value to rpn_stack
+ */
 void rpn_push(struct rpn_node ** rpn_stack, struct rpn_node * new_node) {
   new_node->next = *rpn_stack;
   *rpn_stack = new_node;
 }
 
+/*
+ * removes top value from stack
+ * if second parameter is true, also frees memory
+ * for popped elemement
+ */
 void rpn_pop(struct rpn_node ** rpn_stack, bool fr) {
   if(*rpn_stack != NULL) {
     struct rpn_node *stack_ptr = *rpn_stack;
@@ -108,6 +147,9 @@ void rpn_pop(struct rpn_node ** rpn_stack, bool fr) {
   }
 }
 
+/*
+ * creates new rpn stack element based on type & value
+ */
 struct rpn_node* rpn_create(int type, double value) {
   struct rpn_node *new_node = (struct rpn_node*)malloc(sizeof(struct rpn_node));
   new_node->type = type;
@@ -115,6 +157,12 @@ struct rpn_node* rpn_create(int type, double value) {
   return new_node;
 }
 
+/*
+ * parses an array of tokens into Reverse Polish Notation
+ * list op openrands, using Shunting-Yard algorithm
+ * arguments: array of tokens, array for result,
+ * pointer to result size, pointer to error
+ */
 void rpn_parse(char **input, struct rpn_node *result[], int *result_size, int *error) {
   int i=0, input_size = *result_size, op = 0;
   *result_size = 0;
@@ -122,14 +170,14 @@ void rpn_parse(char **input, struct rpn_node *result[], int *result_size, int *e
   struct rpn_node * op_stack = 0;
   for(i=0; i<input_size; i++) {
     token = input[i];
-    if(rpn_isnum(token)) {
+    if(rpn_isnum(token)) { // token is a number, add to result
       result[*result_size] = rpn_create(0, rpn_parsenum(token));
       (*result_size) ++;
     }
-    else if(rpn_functioncode(token) > 0) {
+    else if(rpn_functioncode(token) > 0) { // token is a function, push onto operators stack
       rpn_push(&op_stack, rpn_create(rpn_functioncode(token), 0));
     }
-    else if(rpn_isop(token[0])) {
+    else if(rpn_isop(token[0])) { // token is an operator
       op = rpn_opcode(token[0]);
       while(op_stack != NULL && ((rpn_left_assoc(op_stack->type) && rpn_precedence(op_stack->type) >= rpn_precedence(op)) || (!rpn_left_assoc(op_stack->type) && rpn_precedence(op_stack->type) > rpn_precedence(op))) ) {
         result[*result_size] = op_stack;
@@ -138,10 +186,10 @@ void rpn_parse(char **input, struct rpn_node *result[], int *result_size, int *e
       }
       rpn_push(&op_stack, rpn_create(op, 0));
     }
-    else if(strcmp(token, "(") == 0) {
+    else if(strcmp(token, "(") == 0) { // token is an opening bracket
       rpn_push(&op_stack, rpn_create(-1, 0));
     }
-    else if(strcmp(token, ")") == 0) {
+    else if(strcmp(token, ")") == 0) { // token is a closing bracket
       bool found_parenthesis = false;
       while(op_stack != NULL) {
         if(op_stack->type == -1) {
@@ -158,13 +206,13 @@ void rpn_parse(char **input, struct rpn_node *result[], int *result_size, int *e
       if(!found_parenthesis) {
         *error = 1;
       }
-      if(op_stack != NULL && op_stack->type >= 7) { // function
+      if(op_stack != NULL && op_stack->type >= 7) {
         result[*result_size] = op_stack;
         (*result_size) ++;
         rpn_pop(&op_stack, false);
       }
     }
-    else {
+    else { // unknown token!
       *error = 1;
       return;
     }
@@ -183,6 +231,10 @@ void rpn_parse(char **input, struct rpn_node *result[], int *result_size, int *e
   */
 }
 
+/*
+ * takes size elements from stack rpn_stack into result array,
+ * or sets error to 1 if unable to.
+ */
 void rpn_getargs(struct rpn_node ** rpn_stack, int size, double result[], int *error) {
   while(size>0) {
     if(*rpn_stack != NULL) {
@@ -197,6 +249,7 @@ void rpn_getargs(struct rpn_node ** rpn_stack, int size, double result[], int *e
   }
 }
 
+/* FUNCTIONS */
 void rpn_addition(struct rpn_node ** rpn_stack, int *error) {
   double args[2];
   rpn_getargs(rpn_stack, 2, args, error);
@@ -268,7 +321,12 @@ void rpn_exponential(struct rpn_node ** rpn_stack, int *error) {
   rpn_getargs(rpn_stack, 1, args, error);
   rpn_push(rpn_stack, rpn_create(0, exp(args[0])));
 }
+/* ENDOF FUNCTIONS */
 
+/*
+ * splits a string cinput into array of tokens output of size size,
+ * or sets error to 1
+ */
 void rpn_tokenize(char *cinput, char *output[], int *size, int *error) {
   char *buffer = malloc(100*sizeof(char));
   char *nbuffer = malloc(100*sizeof(char));
@@ -338,6 +396,11 @@ void rpn_tokenize(char *cinput, char *output[], int *size, int *error) {
   */
 }
 
+/*
+ * evaluates expression input setting result to result
+ * or sets error to 1
+ * arguments: string, pointer to result, pointer to error
+ */
 void rpn_resolve(char *input, double *result, int *error) {
   *error = 0;
   *result = 0;

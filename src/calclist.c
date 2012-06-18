@@ -1,3 +1,7 @@
+/*
+ * two-way list for keeping two values:
+ * expression string and evaluated result
+ */
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -6,6 +10,10 @@
 #include "calc_context.h"
 #include "calclist.h"
 #include "rpn.h"
+
+/*
+ * allocate and return new calclist
+ */
 
 calclist * calclist_new(char * input, double output) {
   calclist * new = malloc(sizeof(calclist));
@@ -16,6 +24,11 @@ calclist * calclist_new(char * input, double output) {
   return new;
 }
 
+/*
+ * transform double to string with precision of 6
+ * omitting precision when number is integer
+ * parameters: number, string
+ */
 void format_double(double result, char * output) {
   if(fmod(result, 1) < 0.000001) {
     sprintf(output, "%.0f", result);
@@ -25,6 +38,10 @@ void format_double(double result, char * output) {
   }
 }
 
+/*
+ * inserts new element in calclist
+ * parameters: input, result, pointer to list pointer
+ */
 void calclist_insert(char * input, double output, calclist ** list) {
   calclist * new = calclist_new(input, output);
   if((*list) == NULL) {
@@ -38,6 +55,10 @@ void calclist_insert(char * input, double output, calclist ** list) {
   }
 }
 
+/*
+ * rewinds calclist pointer to the beginning of the list
+ * parameters: pointer to list pointer
+ */
 void calclist_rewind(calclist ** list) {
   if(!(*list)) return;
   while((*list)->prev != NULL) {
@@ -47,18 +68,30 @@ void calclist_rewind(calclist ** list) {
   }
 }
 
+/*
+ * rewinds calclist pointer to previous element
+ * parameters: pointer to list pointer
+ */
 bool calclist_prev(calclist ** list) {
   if((*list) == NULL || (*list)->prev == NULL) return false;
   *list = (*list)->prev;
   return true;
 }
 
+/*
+ * rewinds calclist pointer to next element
+ * parameters: pointer to list pointer
+ */
 bool calclist_next(calclist ** list) {
   if((*list) == NULL || (*list)->next == NULL) return false;
   *list = (*list)->next;
   return true;
 }
 
+/*
+ * parses one line of input in format expression=result
+ * parameters: pointer to string, pointer to result
+ */
 void calclist_parseline(char ** input, double *result) {
   int i=0;
   for(i; i<strlen(*input); i++) {
@@ -70,6 +103,10 @@ void calclist_parseline(char ** input, double *result) {
   }
 }
 
+/*
+ * writes contents of calclist to file
+ * parameters: pointer to pointer to list, string
+ */
 void calclist_fwrite(calclist ** ilist, char *filename) {
   FILE *file = fopen(filename, "w");
   if(*ilist == NULL || file == NULL) return;
@@ -81,6 +118,10 @@ void calclist_fwrite(calclist ** ilist, char *filename) {
   fclose(file);
 }
 
+/*
+ * loads content of file to calclist
+ * parameters: pointer to pointer to list, string
+ */
 void calclist_fread(calclist ** ilist, char *filename) {
   calclist_free(ilist);
   FILE *file = fopen(filename, "r");
@@ -94,6 +135,10 @@ void calclist_fread(calclist ** ilist, char *filename) {
   fclose(file);
 }
 
+/*
+ * free calclist
+ * parameters: ponter to pointer to list
+ */
 void calclist_free(calclist ** list) {
   if(*list == NULL) return;
   calclist * tmp;
